@@ -1,27 +1,12 @@
 const express = require("express");
 
-const { user } = require("../../models");
-
 const router = express.Router();
+const basic = require("../middleware/basic");
+const bearer = require("../middleware/bearer");
+const { signup, login, bearerLogin } = require("../services/user");
 
-router.get("/", (req, res) => {
-  res.send("Hello");
-});
-router.post("/signup", async (req, res) => {
-  const { email, username, password, bio } = req.body;
-  const User = await user.create({
-    email,
-    username,
-    password,
-    bio,
-  });
-  res.status(200).json({data:User});
-});
-
-// router.get("/getuser", async (req, res) => {
-//   const User = await user.findAll();
-//   res.json(User);
-// });
-// eslint-disable-next-line consistent-return
+router.post("/signup", signup);
+router.post("/login", basic, login);
+router.get("/token", bearer, bearerLogin);
 
 module.exports = router;
