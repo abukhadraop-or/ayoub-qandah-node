@@ -70,7 +70,7 @@ router.get("/articles", async (req, res) => {
         { model: comment, include: [{ model: user, as: "user" }] },
       ],
     });
-    res.json(allPosts);
+    res.status(200).json({ code: 200, data: allPosts });
   } catch (e) {
     console.log(e);
     res.status(500).json(e);
