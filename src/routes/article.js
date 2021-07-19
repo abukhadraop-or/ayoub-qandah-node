@@ -1,7 +1,4 @@
-const express = require("express");
-
-const router = express.Router();
-
+const router = require("express-promise-router")();
 const {
   addArticle,
   allArticles,
@@ -12,8 +9,8 @@ const {
 
 router.post("/article", addArticle);
 router.get("/articles", allArticles);
-router.get("/article/:uuid", singleArticle);
 router.patch("/article", updateArticle);
-router.delete("/article/uuid", deleteArticle);
+router.get("/article/:uuid", singleArticle);
+router.delete("/article/:uuid", deleteArticle);
 
 module.exports = router;

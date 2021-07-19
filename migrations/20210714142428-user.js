@@ -15,11 +15,13 @@ module.exports = {
         defaultValue: DataTypes.UUIDV4,
       },
       email: {
+        unique: true,
         type: DataTypes.STRING,
       },
       username: {
         allowNull: false,
         type: DataTypes.STRING,
+        unique: true,
       },
       password: {
         type: DataTypes.STRING,

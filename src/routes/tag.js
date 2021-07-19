@@ -1,6 +1,5 @@
-const express = require("express");
+const router = require("express-promise-router")();
 
-const router = express.Router();
 const { allTags, tagsWithArticles } = require("../services/tag");
 
 router.get("/tags", allTags);

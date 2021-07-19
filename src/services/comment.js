@@ -1,52 +1,55 @@
+const response = require("../utils/response");
+const { invalidValues, commentError } = require("../middleware/errorhandling");
 const {
   user,
   article,
   comment,
-  // eslint-disable-next-line camelcase
-  article_comment,
+  article_comment, // eslint-disable-line camelcase
 } = require("../../models");
 
 async function addComment(req, res) {
-  try {
-    const { body, userId, articleId } = req.body;
-    const userData = await user.findOne({ where: { uuid: userId } });
-    const createComment = await comment.create({ body, userId: userData.id });
-    const Article = await article.findOne({ where: { uuid: articleId } });
-    console.log(Article);
-    await article_comment.create({
-      articleId: Article.id,
-      commentId: createComment.id,
+  const { body, userId, articleId } = req.body;
+  const userData = await user.findOne({ where: { uuid: userId } });
+  const Article = await article.findOne({ where: { uuid: articleId } });
+  if (!userData) throw new invalidValues("Invalid user id."); // eslint-disable-line new-cap
+  if (!Article) throw new invalidValues("Invalid article id."); // eslint-disable-line new-cap
+  const createComment = await comment
+    .create({ body, userId: userData.id })
+    .catch(() => {
+      throw new commentError("Invalid creating comment in database."); // eslint-disable-line new-cap
     });
-    res.status(200).json({ code: 200, data: createComment });
-  } catch (e) {
-    console.log(e);
-    res.json(e);
-  }
+
+  await article_comment.create({
+    articleId: Article.id,
+    commentId: createComment.id,
+  });
+  res.status(200).json(response(200, createComment, "Comment created."));
 }
 async function getComments(req, res) {
-  const allComments = await comment.findAll({
-    include: [{ model: user, as: "user" }],
-  });
+  const allComments = await comment
+    .findAll({
+      include: [{ model: user, as: "user" }],
+    })
+    .catch(() => {
+      throw new commentError("Invalid get comments in database."); // eslint-disable-line new-cap
+    });
 
-  res.status(200).json({ code: 200, data: allComments });
+  res.status(200).json(response(200, allComments, "Success!"));
 }
 
 async function updateComment(req, res) {
-  try {
-    const { body, id } = req.body;
-    await comment.update({ body }, { where: { id } });
-    const commentData = await comment.findOne({ where: { id } });
-
-    res.json(commentData);
-  } catch (e) {
-    res.json(e);
-  }
+  const { body, id } = req.body;
+  const Comment = await comment.update({ body }, { where: { id } });
+  if (!Comment) throw new invalidValues("Invalid comment id or body data."); // eslint-disable-line new-cap
+  const commentData = await comment.findOne({ where: { id } });
+  res.json(response(200, commentData, "Comment updated."));
 }
 
 async function deleteComment(req, res) {
   const { id } = req.params;
-  await comment.destroy({ where: { id } });
-  res.json({ code: 200, msg: "Comment Deleted." });
+  const Comment = await comment.destroy({ where: { id } });
+  if (!Comment) throw new invalidValues("Invalid comment id."); // eslint-disable-line new-cap
+  res.json(response(200, null, "Comment Deleted."));
 }
 
 module.exports = {

@@ -1,6 +1,4 @@
-const express = require("express");
-
-const router = express.Router();
+const router = require("express-promise-router")();
 const basic = require("../middleware/basic");
 const bearer = require("../middleware/bearer");
 const { signup, login, bearerLogin } = require("../services/user");
