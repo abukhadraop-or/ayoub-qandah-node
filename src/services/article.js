@@ -6,6 +6,7 @@ const {
   article,
   comment,
   article_tag, // eslint-disable-line camelcase
+  article_comment, // eslint-disable-line camelcase
 } = require("../../models");
 
 async function addArticle(req, res) {
@@ -132,8 +133,12 @@ async function updateArticle(req, res) {
 
 async function deleteArticle(req, res) {
   const { uuid } = req.params;
-  const Article = await article.destroy({ where: { uuid } });
-  if (!Article) throw new invalidValues("Invalid article id."); // eslint-disable-line new-cap
+  const prevArticle = await article.findOne({ where: uuid });
+  if (!prevArticle) throw new invalidValues("Invalid article id."); // eslint-disable-line new-cap
+
+  await article_tag.destroy({ where: { articleId: prevArticle.id } });
+  await article_comment.destroy({ where: { articleId: prevArticle.id } });
+  await article.destroy({ where: { uuid } });
 
   res.status(200).json(response(200, null, "Article Deleted!"));
 }

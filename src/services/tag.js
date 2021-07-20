@@ -16,8 +16,11 @@ async function tagsWithArticles(req, res) {
         {
           model: article,
           include: [
-            { model: user, as: "user" },
-            { model: comment, include: [{ model: user, as: "user" }] },
+            { model: user, as: "user", attributes: ["username"] },
+            {
+              model: comment,
+              include: [{ model: user, as: "user", attributes: ["username"] }],
+            },
           ],
         },
       ],
@@ -25,7 +28,10 @@ async function tagsWithArticles(req, res) {
     .catch(() => {
       throw new tagError("Error gettin tags from database."); // eslint-disable-line new-cap
     });
-  res.status(200).json(response(200, tags, "Success!"));
+  const sortingTags = tags.sort(
+    (a, b) => b.articles.length - a.articles.length
+  );
+  res.status(200).json(response(200, sortingTags, "Success!"));
 }
 
 module.exports = {
