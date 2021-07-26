@@ -10,10 +10,6 @@ module.exports = {
         primaryKey: true,
         type: DataTypes.INTEGER,
       },
-      uuid: {
-        type: DataTypes.UUID,
-        defaultValue: DataTypes.UUIDV4,
-      },
       email: {
         unique: true,
         type: DataTypes.STRING,

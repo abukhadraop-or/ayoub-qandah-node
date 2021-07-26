@@ -1,14 +1,33 @@
 const response = require("../utils/response");
-const { tagError } = require("../middleware/errorhandling");
+const { TagError } = require("../middleware/errorhandling");
 const { user, article, comment, tag } = require("../../models");
 
+/**
+ * Get all tags name.
+ *
+ * @param {express.Request} req
+ * @param {express.Response} res
+ *
+ * @return {Promise<object>} -Tag names without any association.
+ *
+ */
 async function allTags(req, res) {
   const tags = await tag.findAll().catch(() => {
-    throw new tagError("Error gettin tags from database."); // eslint-disable-line new-cap
+    throw new TagError("Error gettin tags from database.");
   });
   res.status(200).json(response(200, tags, "Success!"));
 }
 
+/**
+ * Get all tags name with articles.
+ * Sorting the tags by number of articles have a tag.
+ *
+ * @param {express.Request} req
+ * @param {express.Response} res
+ *
+ * @return {Promise<object>} -Tag names with article(username) & comment(username).
+ *
+ */
 async function tagsWithArticles(req, res) {
   const tags = await tag
     .findAll({
@@ -26,7 +45,7 @@ async function tagsWithArticles(req, res) {
       ],
     })
     .catch(() => {
-      throw new tagError("Error gettin tags from database."); // eslint-disable-line new-cap
+      throw new TagError("Error gettin tags from database.");
     });
   const sortingTags = tags.sort(
     (a, b) => b.articles.length - a.articles.length

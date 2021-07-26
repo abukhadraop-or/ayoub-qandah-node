@@ -1,3 +1,6 @@
+/**
+ * Global ErrorHandler Classes.
+ */
 // eslint-disable-next-line max-classes-per-file
 class error {
   constructor(msg, code) {
@@ -6,13 +9,13 @@ class error {
   }
 }
 
-class notFound extends error {
+class NotFound extends error {
   constructor(msg, code) {
     super((msg = "Not Found!"), (code = 404));
     this.hint = "Try to sure the link and method are correct.";
   }
 }
-class signupError extends error {
+class SignupError extends error {
   constructor(msg, hint) {
     super(msg);
     this.code = 500;
@@ -20,7 +23,7 @@ class signupError extends error {
     this.type = "Signup Error!";
   }
 }
-class authError extends error {
+class AuthError extends error {
   constructor(msg, hint) {
     super(msg);
     this.code = 500;
@@ -28,17 +31,17 @@ class authError extends error {
     this.type = "Login Error!";
   }
 }
-class internalError extends error {
+class InternalError extends error {
   constructor(msg, code) {
     super((msg = "Internal Error!"), (code = 500));
   }
 }
-class invalidValues extends error {
+class InvalidValues extends error {
   constructor(msg, code) {
     super(msg, (code = 500));
   }
 }
-class commentError extends error {
+class CommentError extends error {
   constructor(msg, code) {
     super(msg, (code = 502));
     msg = this.msg;
@@ -46,7 +49,7 @@ class commentError extends error {
   }
 }
 
-class articleError extends error {
+class ArticleError extends error {
   constructor(msg, code) {
     super(msg, (code = 502));
     msg = this.msg;
@@ -54,7 +57,7 @@ class articleError extends error {
   }
 }
 
-class tagError extends error{
+class TagError extends error {
   constructor(msg, code) {
     super(msg, (code = 502));
     msg = this.msg;
@@ -63,12 +66,12 @@ class tagError extends error{
 }
 
 module.exports = {
-  notFound,
-  tagError,
-  authError,
-  signupError,
-  commentError,
-  articleError,
-  invalidValues,
-  internalError,
+  NotFound,
+  TagError,
+  AuthError,
+  SignupError,
+  CommentError,
+  ArticleError,
+  InvalidValues,
+  InternalError,
 };

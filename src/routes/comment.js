@@ -7,6 +7,9 @@ const {
   deleteComment,
 } = require("../services/comment");
 
+/**
+ * Comment routes.
+ */
 router.post("/comment", addComment);
 router.get("/comments", getComments);
 router.put("/comment", updateComment);

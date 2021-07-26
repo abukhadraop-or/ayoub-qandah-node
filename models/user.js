@@ -5,19 +5,9 @@ const bcrypt = require("bcrypt");
 
 module.exports = (sequelize, DataTypes) => {
   class user extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate({ article, comment }) {
-      // define association here
       this.hasMany(article, { foreignKey: "userId" });
       this.hasOne(comment, { foreignKey: "userId" });
-    }
-
-    toJSON() {
-      return { ...this.get(), id: undefined };
     }
   }
   user.init(
@@ -33,10 +23,6 @@ module.exports = (sequelize, DataTypes) => {
       },
       bio: DataTypes.STRING,
       image: DataTypes.STRING,
-      uuid: {
-        type: DataTypes.UUID,
-        defaultValue: DataTypes.UUIDV4,
-      },
       token: {
         type: DataTypes.VIRTUAL(DataTypes.STRING),
         get() {
@@ -51,8 +37,6 @@ module.exports = (sequelize, DataTypes) => {
           return JWT;
         },
       },
-
-
     },
     {
       sequelize,
@@ -60,6 +44,9 @@ module.exports = (sequelize, DataTypes) => {
       modelName: "user",
     }
   );
+  /**
+   * Hooks function to hashing password before saving it in database.
+   */
   user.beforeCreate("beforeCreate", async (value) => {
     const pass = value.password;
     const hashPassword = await bcrypt.hash(pass, 10);

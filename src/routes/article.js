@@ -6,11 +6,15 @@ const {
   updateArticle,
   deleteArticle,
 } = require("../services/article");
+const authMiddleware = require("../middleware/bearer");
 
-router.post("/article", addArticle);
+/**
+ * Article routes.
+ */
+router.post("/article", authMiddleware, addArticle);
 router.get("/articles", allArticles);
-router.patch("/article", updateArticle);
+router.patch("/article", authMiddleware, updateArticle);
 router.get("/article/:uuid", singleArticle);
-router.delete("/article/:uuid", deleteArticle);
+router.delete("/article/:articleId/:userId", authMiddleware, deleteArticle);
 
 module.exports = router;
