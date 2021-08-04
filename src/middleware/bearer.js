@@ -14,7 +14,6 @@ const { AuthError } = require("./errorhandling");
  *
  */
 module.exports = async (req, res, next) => {
-  console.log(req.headers.authorization)
   if (!req.headers.authorization) {
     throw new AuthError("There is no token.");
   }
@@ -23,6 +22,7 @@ module.exports = async (req, res, next) => {
   const userData = await user.findOne({
     where: { username: parsedToken.username },
   });
+
   if (userData) {
     req.user = userData;
     next();

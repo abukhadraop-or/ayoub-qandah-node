@@ -35,6 +35,7 @@ async function addArticle(req, res) {
   const userData = await user.findOne({ where: { id: userId } }).catch((e) => {
     throw new InvalidValues("Invalid user id.");
   });
+console.log("teeeeeeeeestt");
   const createArticle = await article
     .create({
       slug,
@@ -150,7 +151,7 @@ async function updateArticle(req, res) {
   if (User.id !== Article.userId)
     throw new InvalidValues("You dont have an access to update this article.");
   await article
-    .update({ slug, title, description, body, tag_list }, { where: { uuid } })
+    .update({ slug, title, description, body, tag_list }, { where: { id } })
     .catch((e) => {
       throw new ArticleError("Error in values data type or name of fields.");
     });

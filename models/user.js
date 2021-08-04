@@ -9,6 +9,10 @@ module.exports = (sequelize, DataTypes) => {
       this.hasMany(article, { foreignKey: "userId" });
       this.hasOne(comment, { foreignKey: "userId" });
     }
+
+    toJSON() {
+      return { ...this.get(), password: undefined };
+    }
   }
   user.init(
     {
@@ -27,10 +31,9 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.VIRTUAL(DataTypes.STRING),
         get() {
           const tokenObject = {
-            uuid: this.uuid,
+            id: this.id,
             username: this.username,
             email: this.email,
-            password: this.password,
           };
 
           const JWT = jwt.sign(tokenObject, process.env.SECRET);

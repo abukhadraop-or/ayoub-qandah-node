@@ -23,7 +23,6 @@ module.exports = {
         type: DataTypes.STRING,
       },
       bio: {
-        allowNull: false,
         type: DataTypes.STRING,
       },
       image: {
