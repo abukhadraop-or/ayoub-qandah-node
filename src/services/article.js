@@ -120,7 +120,7 @@ async function singleArticle(req, res) {
       { model: user, as: "user", attributes: ["username"] },
       { model: tag },
       {
-        mode: comment,
+        model: comment,
         include: [{ model: user, as: "user", attributes: ["username"] }],
       },
     ],

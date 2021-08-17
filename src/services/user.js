@@ -1,7 +1,6 @@
 const PasswordValidator = require("password-validator");
 const validator = require("email-validator");
-const { where } = require("sequelize");
-const { user } = require("../../models");
+const { user, article, comment } = require("../../models");
 const { SignupError } = require("../middleware/errorhandling");
 const response = require("../utils/response");
 
@@ -94,7 +93,45 @@ async function updateUser(req, res) {
   await user.update(obj, { where: { id } }).catch((e) => {
     res.status(501).json(response(501, null, e));
   });
-  res.json({ msg: "sucsess!" });
+  const token = await user.findOne({ where: { id } });
+  res.json(response(200, token, "sucsess!"));
 }
 
-module.exports = { signup, login, bearerLogin, updateUser };
+/**
+ *To get articles that user created it.
+ *
+ * @param {express.Request} req -Token.
+ * @param res
+ * @return {Promise<object>}
+ */
+async function userArticles(req, res) {
+  const userId = req.user.id;
+  const data = await user
+    .findOne({
+      where: { id: userId },
+      include: [
+        {
+          model: article,
+          include: [
+            { model: user, as: "user", attributes: ["username"] },
+            {
+              model: comment,
+              include: [
+                {
+                  model: user,
+                  as: "user",
+                  attributes: ["username"],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    })
+    .catch((e) => {
+      res.status(501).json(response(501, null, e));
+    });
+  res.json(data);
+}
+
+module.exports = { signup, login, bearerLogin, updateUser, userArticles };
