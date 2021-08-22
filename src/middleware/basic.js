@@ -1,5 +1,5 @@
 const bcrypt = require("bcrypt");
-const { user } = require("../../models");
+const { User } = require("../models");
 const { AuthError } = require("./errorhandling");
 
 /**
@@ -14,7 +14,7 @@ const { AuthError } = require("./errorhandling");
  */
 module.exports = async (req, res, next) => {
   const { email, password } = req.body;
-  const userData = await user.findOne({ where: { email } });
+  const userData = await User.findOne({ where: { email } });
   if (!userData) throw new AuthError("Invalid Username.");
   const valid = await bcrypt.compare(password, userData.password);
   if (valid) {

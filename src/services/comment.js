@@ -1,11 +1,6 @@
 const response = require("../utils/response");
 const { InvalidValues, CommentError } = require("../middleware/errorhandling");
-const {
-  user,
-  article,
-  comment,
-  article_comment, // eslint-disable-line camelcase
-} = require("../../models");
+const { User, Article, Comment, ArticleComment } = require("../../models");
 
 /**
  * Create comment to article.
@@ -19,20 +14,19 @@ const {
  *
  */
 async function addComment(req, res) {
-  const { body, userId, articleId } = req.body;
-  const userData = await user.findOne({ where: { id: userId } });
-  const Article = await article.findOne({ where: { id: articleId } });
-  if (!userData) throw new InvalidValues("Invalid user id.");
-  if (!Article) throw new InvalidValues("Invalid article id.");
-  const createComment = await comment
-    .create({ body, userId: userData.id })
-    .catch(() => {
-      throw new CommentError("Invalid creating comment in database.");
-    });
+  const { body, articleId } = req.body;
+  const article = await Article.findOne({ where: { id: articleId } });
+  if (!article) throw new InvalidValues("Invalid article id.");
+  const createComment = await Comment.create({
+    body,
+    userId: req.user.id,
+  }).catch(() => {
+    throw new CommentError("Invalid creating comment in database.");
+  });
 
-  await article_comment.create({
-    articleId: Article.id,
-    commentId: createComment.id,
+  await ArticleComment.create({
+    ArticleId: article.id,
+    CommentId: createComment.id,
   });
   res.status(200).json(response(200, createComment, "Comment created."));
 }
@@ -47,13 +41,11 @@ async function addComment(req, res) {
  *
  */
 async function getComments(req, res) {
-  const allComments = await comment
-    .findAll({
-      include: [{ model: user, as: "user" }],
-    })
-    .catch(() => {
-      throw new CommentError("Invalid get comments in database.");
-    });
+  const allComments = await Comment.findAll({
+    include: [{ model: User, as: "user" }],
+  }).catch(() => {
+    throw new CommentError("Invalid get comments in database.");
+  });
 
   res.status(200).json(response(200, allComments, "Success!"));
 }
@@ -69,9 +61,9 @@ async function getComments(req, res) {
  */
 async function updateComment(req, res) {
   const { body, id } = req.body;
-  const Comment = await comment.update({ body }, { where: { id } });
-  if (!Comment) throw new InvalidValues("Invalid comment id or body data.");
-  const commentData = await comment.findOne({ where: { id } });
+  const comment = await Comment.update({ body }, { where: { id } });
+  if (!comment) throw new InvalidValues("Invalid comment id or body data.");
+  const commentData = await Comment.findOne({ where: { id } });
   res.json(response(200, commentData, "Comment updated."));
 }
 
@@ -86,8 +78,8 @@ async function updateComment(req, res) {
  */
 async function deleteComment(req, res) {
   const { id } = req.params;
-  const Comment = await comment.destroy({ where: { id } });
-  if (!Comment) throw new InvalidValues("Invalid comment id.");
+  const comment = await Comment.destroy({ where: { id } });
+  if (!comment) throw new InvalidValues("Invalid comment id.");
   res.json(response(200, null, "Comment Deleted."));
 }
 

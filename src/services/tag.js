@@ -1,6 +1,6 @@
 const response = require("../utils/response");
 const { TagError } = require("../middleware/errorhandling");
-const { user, article, comment, tag } = require("../../models");
+const { User, Article, Comment, Tag } = require("../../models");
 
 /**
  * Get all tags name.
@@ -12,8 +12,8 @@ const { user, article, comment, tag } = require("../../models");
  *
  */
 async function allTags(req, res) {
-  const tags = await tag.findAll().catch(() => {
-    throw new TagError("Error gettin tags from database.");
+  const tags = await Tag.findAll().catch(() => {
+    throw new TagError("Error getting tags from database.");
   });
   res.status(200).json(response(200, tags, "Success!"));
 }
@@ -29,26 +29,24 @@ async function allTags(req, res) {
  *
  */
 async function tagsWithArticles(req, res) {
-  const tags = await tag
-    .findAll({
-      include: [
-        {
-          model: article,
-          include: [
-            { model: user, as: "user", attributes: ["username"] },
-            {
-              model: comment,
-              include: [{ model: user, as: "user", attributes: ["username"] }],
-            },
-          ],
-        },
-      ],
-    })
-    .catch(() => {
-      throw new TagError("Error gettin tags from database.");
-    });
+  const tags = await Tag.findAll({
+    include: [
+      {
+        model: Article,
+        include: [
+          { model: User, as: "user", attributes: ["username"] },
+          {
+            model: Comment,
+            include: [{ model: User, as: "user", attributes: ["username"] }],
+          },
+        ],
+      },
+    ],
+  }).catch(() => {
+    throw new TagError("Error gettin tags from database.");
+  });
   const sortingTags = tags.sort(
-    (a, b) => b.articles.length - a.articles.length
+    (a, b) => b.Articles.length - a.Articles.length
   );
   res.status(200).json(response(200, sortingTags, "Success!"));
 }

@@ -1,17 +1,15 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable("article_comments", {
+    await queryInterface.createTable("Tags", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      articleId: {
-        type: Sequelize.INTEGER,
-      },
-      commentId: {
-        type: Sequelize.INTEGER,
+      tags: {
+        unique: true,
+        type: Sequelize.STRING,
       },
       createdAt: {
         allowNull: false,
@@ -24,6 +22,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable("article_comments");
+    await queryInterface.dropTable("Tags");
   },
 };

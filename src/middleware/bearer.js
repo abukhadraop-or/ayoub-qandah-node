@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const { user } = require("../../models");
+const { User } = require("../models");
 const { AuthError } = require("./errorhandling");
 
 /**
@@ -19,7 +19,7 @@ module.exports = async (req, res, next) => {
   }
   const token = req.headers.authorization.split(" ").pop();
   const parsedToken = jwt.verify(token, process.env.SECRET);
-  const userData = await user.findOne({
+  const userData = await User.findOne({
     where: { username: parsedToken.username },
   });
 

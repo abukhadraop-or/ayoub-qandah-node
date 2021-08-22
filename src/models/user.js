@@ -4,17 +4,17 @@ require("dotenv").config();
 const bcrypt = require("bcrypt");
 
 module.exports = (sequelize, DataTypes) => {
-  class user extends Model {
-    static associate({ article, comment }) {
-      this.hasMany(article, { foreignKey: "userId" });
-      this.hasOne(comment, { foreignKey: "userId" });
+  class User extends Model {
+    static associate({ Article, Comment }) {
+      this.hasMany(Article, { foreignKey: "userId" });
+      this.hasOne(Comment, { foreignKey: "userId" });
     }
 
     toJSON() {
       return { ...this.get(), password: undefined };
     }
   }
-  user.init(
+  User.init(
     {
       email: {
         type: DataTypes.STRING,
@@ -43,18 +43,17 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      tableName: "users",
-      modelName: "user",
+      tableName: "Users",
+      modelName: "User",
     }
   );
   /**
    * Hooks function to hashing password before saving it in database.
    */
-  user.beforeCreate("beforeCreate", async (value) => {
+  User.beforeCreate("beforeCreate", async (value) => {
     const pass = value.password;
     const hashPassword = await bcrypt.hash(pass, 10);
     value.password = hashPassword;
-    // user.setDataValue("password", hashPassword);
   });
-  return user;
+  return User;
 };

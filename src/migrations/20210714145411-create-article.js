@@ -1,6 +1,6 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable("articles", {
+    await queryInterface.createTable("Articles", {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -19,7 +19,7 @@ module.exports = {
       body: {
         type: Sequelize.STRING,
       },
-      tag_list: {
+      tagList: {
         type: Sequelize.ARRAY(Sequelize.STRING),
       },
       favorited: {
@@ -43,6 +43,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable("articles");
+    await queryInterface.dropTable("Articles");
   },
 };

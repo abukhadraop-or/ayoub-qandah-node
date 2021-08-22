@@ -2,20 +2,20 @@
  * Global ErrorHandler Classes.
  */
 // eslint-disable-next-line max-classes-per-file
-class error {
+class BaseError extends Error {
   constructor(msg, code) {
-    this.msg = msg;
+    super(msg);
     this.code = code;
   }
 }
 
-class NotFound extends error {
+class NotFound extends BaseError {
   constructor(msg, code) {
     super((msg = "Not Found!"), (code = 404));
     this.hint = "Try to sure the link and method are correct.";
   }
 }
-class SignupError extends error {
+class SignupError extends BaseError {
   constructor(msg, hint) {
     super(msg);
     this.code = 500;
@@ -23,7 +23,7 @@ class SignupError extends error {
     this.type = "Signup Error!";
   }
 }
-class AuthError extends error {
+class AuthError extends BaseError {
   constructor(msg, hint) {
     super(msg);
     this.code = 500;
@@ -31,17 +31,17 @@ class AuthError extends error {
     this.type = "Login Error!";
   }
 }
-class InternalError extends error {
+class InternalError extends BaseError {
   constructor(msg, code) {
     super((msg = "Internal Error!"), (code = 500));
   }
 }
-class InvalidValues extends error {
+class InvalidValues extends BaseError {
   constructor(msg, code) {
     super(msg, (code = 500));
   }
 }
-class CommentError extends error {
+class CommentError extends BaseError {
   constructor(msg, code) {
     super(msg, (code = 502));
     msg = this.msg;
@@ -49,7 +49,7 @@ class CommentError extends error {
   }
 }
 
-class ArticleError extends error {
+class ArticleError extends BaseError {
   constructor(msg, code) {
     super(msg, (code = 502));
     msg = this.msg;
@@ -57,7 +57,7 @@ class ArticleError extends error {
   }
 }
 
-class TagError extends error {
+class TagError extends BaseError {
   constructor(msg, code) {
     super(msg, (code = 502));
     msg = this.msg;

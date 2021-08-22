@@ -1,21 +1,21 @@
 const { Model } = require("sequelize");
 
 module.exports = (sequelize, DataTypes) => {
-  class tag extends Model {
-    static associate({ article }) {
-      this.belongsToMany(article, {
-        through: "article_tag",
+  class Tag extends Model {
+    static associate({ Article }) {
+      this.belongsToMany(Article, {
+        through: "ArticleTag",
       });
     }
   }
-  tag.init(
+  Tag.init(
     {
       tags: DataTypes.STRING,
     },
     {
       sequelize,
-      modelName: "tag",
+      modelName: "Tag",
     }
   );
-  return tag;
+  return Tag;
 };

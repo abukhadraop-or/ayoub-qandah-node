@@ -1,6 +1,6 @@
 const PasswordValidator = require("password-validator");
 const validator = require("email-validator");
-const { user, article, comment } = require("../../models");
+const { User, Article, Comment } = require("../models");
 const { SignupError } = require("../middleware/errorhandling");
 const response = require("../utils/response");
 
@@ -14,40 +14,32 @@ schema.is().min(8).has().digits(1);
  * @param {express.Response} res
  *
  * @return {Promise<object>} -User information's with token.
- *
  */
 async function signup(req, res) {
-  const { email, username, password, bio } = req.body;
+  const { email, username, password } = req.body;
+
   if (!validator.validate(email)) throw new SignupError("Incorrect Email.");
 
   if (!schema.validate(password))
     res
       .status(501)
       .json({ msg: "Password must have digits and min length 8." });
-  // throw new SignupError(
-  //   "Your Password is Incorrect.",
-  //   "Password must have digits and min length 8."
-  // ).msg;
 
-  const User = await user
-    .create({
-      email,
-      username,
-      password,
-      bio,
-    })
-    .catch((e) => {
-      // Take the unique value from the error[string] that come from  database.
-      res.status(501).json({
-        msg: `${e.errors[0].message.split(" ").shift()} already exist.`,
-      });
-      // throw new SignupError(
-      //   // Take the unique value from the error[string] that come from  database.
-      //   `${e.errors[0].message.split(" ").shift()} already exist.`
-      // ).msg;
+  const user = await User.create({
+    email,
+    username,
+    password,
+  }).catch((e) => {
+    // Take the unique value from the error[string] that come from  database.
+    res.status(501).json({
+      msg: `${e.errors[0].message.split(" ").shift()} already exist.`,
     });
-
-  res.status(200).json(response(200, User, "Success!"));
+    // throw new SignupError(
+    //   // Take the unique value from the error[string] that come from  database.
+    //   `${e.errors[0].message.split(" ").shift()} already exist.`
+    // ).msg;
+  });
+  res.status(200).json(response(200, user, "Success!"));
 }
 
 /**
@@ -84,17 +76,11 @@ function bearerLogin(req, res) {
  * @return {Promise<object>}
  */
 async function updateUser(req, res) {
-  const { id, username, bio, email, password } = req.body;
-  const obj = {};
-  if (username) obj.username = username;
-  if (bio) obj.bio = bio;
-  if (password) obj.password = password;
-  if (email) obj.email = email;
-  await user.update(obj, { where: { id } }).catch((e) => {
+  await User.update(req.body, { where: { id: req.user.id } }).catch((e) => {
     res.status(501).json(response(501, null, e));
   });
-  const token = await user.findOne({ where: { id } });
-  res.json(response(200, token, "sucsess!"));
+  const token = await User.findOne({ where: { id: req.user.id } });
+  res.json(response(200, token, "success!"));
 }
 
 /**
@@ -106,32 +92,31 @@ async function updateUser(req, res) {
  */
 async function userArticles(req, res) {
   const userId = req.user.id;
-  const data = await user
-    .findOne({
-      where: { id: userId },
-      include: [
-        {
-          model: article,
-          include: [
-            { model: user, as: "user", attributes: ["username"] },
-            {
-              model: comment,
-              include: [
-                {
-                  model: user,
-                  as: "user",
-                  attributes: ["username"],
-                },
-              ],
-            },
-          ],
-        },
-      ],
-    })
-    .catch((e) => {
-      res.status(501).json(response(501, null, e));
-    });
-  res.json(data);
+  const data = await User.findOne({
+    where: { id: userId },
+    include: [
+      {
+        model: Article,
+        include: [
+          { model: User, as: "user", attributes: ["username"] },
+          {
+            model: Comment,
+            include: [
+              {
+                model: User,
+                as: "user",
+                attributes: ["username"],
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  }).catch((e) => {
+    res.status(501).json(response(501, null, e));
+  });
+
+  res.json(response(200, data));
 }
 
 module.exports = { signup, login, bearerLogin, updateUser, userArticles };

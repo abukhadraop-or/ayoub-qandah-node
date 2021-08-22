@@ -1,16 +1,16 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable("article_tags", {
+    await queryInterface.createTable("ArticleTags", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      articleId: {
+      ArticleId: {
         type: Sequelize.INTEGER,
       },
-      tagId: {
+      TagId: {
         type: Sequelize.INTEGER,
       },
       createdAt: {
@@ -24,6 +24,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable("article_tags");
+    await queryInterface.dropTable("ArticleTags");
   },
 };

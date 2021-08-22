@@ -6,13 +6,14 @@ const {
   updateComment,
   deleteComment,
 } = require("../services/comment");
+const authMiddleware = require("../middleware/bearer");
 
 /**
  * Comment routes.
  */
-router.post("/comment", addComment);
-router.get("/comments", getComments);
-router.put("/comment", updateComment);
-router.delete("/comment/:id", deleteComment);
+router.post("/comment", authMiddleware, addComment);
+router.get("/comments", authMiddleware, getComments);
+router.put("/comment", authMiddleware, updateComment);
+router.delete("/comment/:id", authMiddleware, deleteComment);
 
 module.exports = router;
