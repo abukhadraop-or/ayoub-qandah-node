@@ -11,8 +11,8 @@ class BaseError extends Error {
 
 class NotFound extends BaseError {
   constructor(msg, code) {
-    super((msg = "Not Found!"), (code = 404));
-    this.hint = "Try to sure the link and method are correct.";
+    super((msg = 'Not Found!'), (code = 404));
+    this.hint = 'Try to sure the link and method are correct.';
   }
 }
 class SignupError extends BaseError {
@@ -20,7 +20,7 @@ class SignupError extends BaseError {
     super(msg);
     this.code = 500;
     this.hint = hint;
-    this.type = "Signup Error!";
+    this.type = 'Signup Error!';
   }
 }
 class AuthError extends BaseError {
@@ -28,12 +28,12 @@ class AuthError extends BaseError {
     super(msg);
     this.code = 500;
     this.hint = hint;
-    this.type = "Login Error!";
+    this.type = 'Login Error!';
   }
 }
 class InternalError extends BaseError {
   constructor(msg, code) {
-    super((msg = "Internal Error!"), (code = 500));
+    super((msg = 'Internal Error!'), (code = 500));
   }
 }
 class InvalidValues extends BaseError {
@@ -45,7 +45,7 @@ class CommentError extends BaseError {
   constructor(msg, code) {
     super(msg, (code = 502));
     msg = this.msg;
-    this.type = "Comment Error!";
+    this.type = 'Comment Error!';
   }
 }
 
@@ -53,7 +53,7 @@ class ArticleError extends BaseError {
   constructor(msg, code) {
     super(msg, (code = 502));
     msg = this.msg;
-    this.type = "Article Error!";
+    this.type = 'Article Error!';
   }
 }
 
@@ -61,7 +61,7 @@ class TagError extends BaseError {
   constructor(msg, code) {
     super(msg, (code = 502));
     msg = this.msg;
-    this.type = "Tag Error!";
+    this.type = 'Tag Error!';
   }
 }
 

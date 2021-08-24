@@ -1,6 +1,6 @@
-const jwt = require("jsonwebtoken");
-const { User } = require("../models");
-const { AuthError } = require("./errorhandling");
+const jwt = require('jsonwebtoken');
+const { User } = require('../models');
+const { AuthError } = require('./errorhandling');
 
 /**
  * Login by token.
@@ -15,9 +15,10 @@ const { AuthError } = require("./errorhandling");
  */
 module.exports = async (req, res, next) => {
   if (!req.headers.authorization) {
-    throw new AuthError("There is no token.");
+    throw new AuthError('There is no token.');
   }
-  const token = req.headers.authorization.split(" ").pop();
+  const token = req.headers.authorization.split(' ').pop();
+
   const parsedToken = jwt.verify(token, process.env.SECRET);
   const userData = await User.findOne({
     where: { username: parsedToken.username },
@@ -27,6 +28,6 @@ module.exports = async (req, res, next) => {
     req.user = userData;
     next();
   } else {
-    throw new AuthError("Invalid token.");
+    throw new AuthError('Invalid token.');
   }
 };

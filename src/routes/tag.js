@@ -1,11 +1,11 @@
-const router = require("express-promise-router")();
+const router = require('express-promise-router')();
 
-const { allTags, tagsWithArticles } = require("../services/tag");
+const { getTags, getTagsWithArticles } = require('../controller/tag');
 
 /**
  * Tag routes.
  */
-router.get("/tags", allTags);
-router.get("/tags/articles", tagsWithArticles);
+router.get('/tags', getTags);
+router.get('/tags/articles', getTagsWithArticles);
 
 module.exports = router;

@@ -1,10 +1,10 @@
-const { Model } = require("sequelize");
+const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
   class Tag extends Model {
     static associate({ Article }) {
       this.belongsToMany(Article, {
-        through: "ArticleTag",
+        through: 'ArticleTag',
       });
     }
   }
@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "Tag",
+      modelName: 'Tag',
     }
   );
   return Tag;
