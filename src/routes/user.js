@@ -4,7 +4,6 @@ const {
   login,
   signup,
   putUser,
-  bearerLogin,
   getUserArticles,
 } = require('../controller/user');
 const { userValidation } = require('../middleware/user_validator');
@@ -12,10 +11,9 @@ const { userValidation } = require('../middleware/user_validator');
 /**
  * User routes.
  */
-router.post('/login', login);
-router.put('/update', bearer, putUser);
-router.get('/token', bearer, bearerLogin);
+router.post('/login', userValidation, login);
 router.post('/signup', userValidation, signup);
 router.get('/user/articles', bearer, getUserArticles);
+router.put('/update', userValidation, bearer, putUser);
 
 module.exports = router;

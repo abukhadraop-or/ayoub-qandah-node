@@ -1,12 +1,23 @@
 const { ArticleTag } = require('../models');
 
-const articleTag = async (values) => {
-  const data = await ArticleTag.bulkCreate(values);
+/**
+ * To add multi or single tag in ArticleTag join table.
+ *
+ * @param {object} articleId ArticleId & TagId.
+ *
+ * @return {Promise<Array>} ArticleId & TagId.
+ */
+const articleTag = (values) => {
+  const data = ArticleTag.bulkCreate(values);
   return data;
 };
-
-const removeArticleTag = async (articleId) => {
-  await ArticleTag.destroy({ where: { ArticleId: articleId } });
+/**
+ * To remove  article tags from ArticleTag join table.
+ *
+ * @param {number} articleId ArticleId.
+ */
+const removeArticleTag = (articleId) => {
+  ArticleTag.destroy({ where: { ArticleId: articleId } });
 };
 
 module.exports = { removeArticleTag, articleTag };

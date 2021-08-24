@@ -1,21 +1,22 @@
-const {
-  Tag,
-  User,
-  Article,
-  Comment,
-  ArticleTag,
-  ArticleComment,
-} = require('../models');
-const { ArticleError, InvalidValues } = require('../middleware/errorhandling');
+const { Tag, User, Article, Comment } = require('../models');
 
-const addArticle = async (values) => {
-  const createArticle = await Article.create(values).catch((e) => {
-    throw new ArticleError('Error in values data type or name of fields.');
-  });
-
+/**
+ * To insert new article.
+ *
+ * @param {object} values Title, description, body & tagList.
+ *
+ * @return {Promise<object>} Article data.
+ */
+const addArticle = (values) => {
+  const createArticle = Article.create(values);
   return createArticle;
 };
 
+/**
+ * To get all articles.
+ *
+ * @return {Promise<object>} Article data.
+ */
 const allArticles = () => {
   const allPosts = Article.findAndCountAll({
     include: [
@@ -31,12 +32,18 @@ const allArticles = () => {
         ],
       },
     ],
-  }).catch((e) => {
-    throw new ArticleError(`Error finding the articles from database:- ${e}`);
   });
+
   return allPosts;
 };
 
+/**
+ * To insert new article.
+ *
+ * @param {object} values Title, description, body & tagList.
+ *
+ * @return {Promise<object>} Article data.
+ */
 const singleArticle = (id) => {
   const article = Article.findOne({
     where: { id },
@@ -51,11 +58,22 @@ const singleArticle = (id) => {
   });
   return article;
 };
-const updateArticle = async (values) => {
-  await Article.update(values, { where: { id: values.id } });
+
+/**
+ * To update specific article.
+ *
+ * @param {object} values Id, title, description, body & tagList.
+ */
+const updateArticle = (values) => {
+  Article.update(values, { where: { id: values.id } });
 };
 
-const removeArticle = async (articleId, userId) => {
+/**
+ * To remove specific article.
+ *
+ * @param {object} articleId Article id.
+ */
+const removeArticle = async (articleId) => {
   await Article.destroy({ where: { id: articleId } });
 };
 

@@ -1,8 +1,6 @@
-const bcrypt = require("bcrypt");
-
 module.exports = {
   up: async (queryInterface, DataTypes) => {
-    await queryInterface.createTable("Users", {
+    await queryInterface.createTable('Users', {
       id: {
         unique: true,
         allowNull: false,
@@ -43,6 +41,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable("Users");
+    await queryInterface.dropTable('Users');
   },
 };

@@ -1,33 +1,28 @@
 const jwt = require('jsonwebtoken');
-const { User } = require('../models');
-const { AuthError } = require('./errorhandling');
-
+const { getUser } = require('../services/user');
+const { Validation } = require('./error_handling');
 /**
  * Login by token.
  * Check if the token valid.
  *
- * @param {express.Request} req -Token.
- * @param {express.Response} res
+ * @param {express.Request}      req Token.
+ * @param {express.Response}     res
  * @param {express.NextFunction} next
  *
- * @return {Promise<object>} -User Information's (username,password,email).
- *
+ * @return {object} User Information's (username,password,email).
  */
 module.exports = async (req, res, next) => {
   if (!req.headers.authorization) {
-    throw new AuthError('There is no token.');
+    throw new Validation('There is no token.');
   }
   const token = req.headers.authorization.split(' ').pop();
-
   const parsedToken = jwt.verify(token, process.env.SECRET);
-  const userData = await User.findOne({
-    where: { username: parsedToken.username },
-  });
 
+  const userData = await getUser(parsedToken.email);
   if (userData) {
     req.user = userData;
     next();
   } else {
-    throw new AuthError('Invalid token.');
+    throw new Validation('Invalid token.');
   }
 };

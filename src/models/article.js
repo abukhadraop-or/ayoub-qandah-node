@@ -17,10 +17,7 @@ module.exports = (sequelize, DataTypes) => {
       tagList: DataTypes.ARRAY(DataTypes.STRING),
       favorites_count: DataTypes.INTEGER,
       favorited: {
-        type: new DataTypes.VIRTUAL(DataTypes.BOOLEAN),
-        get() {
-          return false;
-        },
+        type: new DataTypes.BOOLEAN(DataTypes.BOOLEAN),
       },
     },
     {

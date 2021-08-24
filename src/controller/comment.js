@@ -1,5 +1,5 @@
 const response = require('../utils/response');
-const { InvalidValues, CommentError } = require('../middleware/errorhandling');
+const { DatabaseErr, Validation } = require('../middleware/error_handling');
 const {
   addComment,
   allComments,
@@ -14,23 +14,28 @@ const { addArticleComment } = require('../services/article_comment');
  * Make association between comment & article.
  * Make association between comment & user that's add the comment.
  *
- * @param {express.Request} req -Body,userId.s
+ * @param {express.Request}  req Body & userId.
  * @param {express.Response} res
  *
- * @return {Promise<object>} -Comment.
+ * @return {object} Comment data.
  */
 async function postComment(req, res) {
   const article = await singleArticle(req.body.articleId);
-  if (!article) throw new InvalidValues('Invalid article id.');
+  if (!article) throw new Validation('Invalid article id.');
+  if (req.user.id !== article.dataValues.userId) {
+    throw new Validation('You do not have an access.');
+  }
+
   req.body.userId = req.user.id;
+
   const comment = await addComment(req.body);
-  if (!comment) throw new CommentError('Invalid creating comment.');
+  if (!comment) throw new DatabaseErr('Invalid inserting comment.');
 
   const joinTable = addArticleComment(
     article.dataValues.id,
     comment.dataValues.id
   );
-  if (!joinTable) throw new CommentError('Error in ArticleComment join table.');
+  if (!joinTable) throw new DatabaseErr('Error in ArticleComment join table.');
 
   res.status(200).json(response(200, comment, 'Comment created.'));
 }
@@ -38,16 +43,15 @@ async function postComment(req, res) {
 /**
  * Get all comments with user associate.
  *
- * @param {express.Request} req
+ * @param {express.Request}  req
  * @param {express.Response} res
  *
- * @return {Promise<object>} -Comments.
- *
+ * @return {object} Comments.
  */
 async function getComments(req, res) {
   const data = await allComments();
   if (!data) {
-    throw new CommentError('Invalid get comments in database.');
+    throw new DatabaseErr('Invalid get comments in database.');
   }
   res.status(200).json(response(200, data, 'Success!'));
 }
@@ -55,43 +59,47 @@ async function getComments(req, res) {
 /**
  * Update specific comment by id.
  *
- * @param {express.Request} req -Comment id.
+ * @param {express.Request}  req Comment id.
  * @param {express.Response} res
  *
- * @return {Promise<object>} -Comment updated.
- *
+ * @return {object} Comment updated.
  */
 async function putComment(req, res) {
-  // if (req.user.id !== req.body.id) {
-  //   throw new InvalidValues("You don't have an access.");
-  // }
+  if (req.user.id !== req.body.id) {
+    throw new Validation("You don't have an access.");
+  }
   req.body.userId = req.user.id;
   const comment = await updateComment(req.body);
-  if (!comment) throw new InvalidValues('Invalid comment id or body data.');
+  if (!comment) throw new Validation('Invalid comment id or body data.');
+
   const updatedData = await singleComment(req.body.id);
+  if (!updatedData) {
+    throw new DatabaseErr('Invalid get single comment data.');
+  }
+
   res.json(response(200, updatedData, 'Comment updated.'));
 }
 
 /**
  * Delete specific comment by id.
  *
- * @param {express.Request} req -Comment id.
+ * @param {express.Request}  req Comment id.
  * @param {express.Response} res
  *
- * @return {Promise<object>} -Comment deleted.
+ * @return {object} Comment deleted.
  */
 async function deleteComment(req, res) {
   const { id } = req.params;
   const preComment = await singleComment(id);
 
   if (!preComment) {
-    throw new InvalidValues('Invalid id.');
+    throw new Validation('Invalid id.');
   }
   if (preComment.dataValues.userId !== req.user.id) {
-    throw new InvalidValues("You don't have an access.");
+    throw new Validation('You do not have an access.');
   }
   const comment = removeComment(id);
-  if (!comment) throw new InvalidValues('Invalid comment id.');
+  if (!comment) throw new Validation('Invalid comment id.');
 
   res.json(response(200, null, 'Comment Deleted.'));
 }

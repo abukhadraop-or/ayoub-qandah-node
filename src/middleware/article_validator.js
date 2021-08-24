@@ -1,5 +1,8 @@
 const { body } = require('express-validator');
 
+/**
+ * Check input validation.
+ */
 module.exports.userValidation = [
   body('title')
     .isString()

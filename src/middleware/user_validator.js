@@ -1,5 +1,8 @@
-const { body, validationResult, oneOf } = require('express-validator');
+const { body } = require('express-validator');
 
+/**
+ * Check input validation.
+ */
 module.exports.userValidation = [
   body('email').isEmail().withMessage('Should be correct email.'),
   body('username')

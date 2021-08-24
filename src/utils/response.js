@@ -1,4 +1,4 @@
-const { NotFound, InternalError } = require("../middleware/errorhandling");
+const { NotFound, InternalError } = require('../middleware/error_handling');
 
 /**
  * Response function.

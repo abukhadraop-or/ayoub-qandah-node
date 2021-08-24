@@ -1,10 +1,25 @@
 const { ArticleComment } = require('../models');
-
-const removeArticleComment = async (articleId) => {
-  await ArticleComment.destroy({ where: { ArticleId: articleId } });
+/**
+ * To remove comment from join table between article and comment.
+ *
+ * @param {number} articleId Article id.
+ */
+const removeArticleComment = (articleId) => {
+  ArticleComment.destroy({
+    where: { ArticleId: articleId },
+  });
 };
-const addArticleComment = async (articleId, commentId) => {
-  const data = await ArticleComment.create({
+
+/**
+ * To add comment in join table between article and comment.
+ *
+ * @param {number} articleId Article id.
+ * @param {number} articleId Comment id.
+ *
+ * @return {Promise<object>} ArticleId & CommentId.
+ */
+const addArticleComment = (articleId, commentId) => {
+  const data = ArticleComment.create({
     ArticleId: articleId,
     CommentId: commentId,
   });
@@ -12,6 +27,6 @@ const addArticleComment = async (articleId, commentId) => {
 };
 
 module.exports = {
-  removeArticleComment,
   addArticleComment,
+  removeArticleComment,
 };

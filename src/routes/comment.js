@@ -11,9 +11,9 @@ const authMiddleware = require('../middleware/bearer');
 /**
  * Comment routes.
  */
+router.put('/comment', authMiddleware, putComment);
 router.post('/comment', authMiddleware, postComment);
 router.get('/comments', authMiddleware, getComments);
-router.put('/comment', authMiddleware, putComment);
 router.delete('/comment/:id', authMiddleware, deleteComment);
 
 module.exports = router;
