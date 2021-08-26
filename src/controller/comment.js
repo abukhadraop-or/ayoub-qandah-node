@@ -1,5 +1,5 @@
 const response = require('../utils/response');
-const { DatabaseErr, Validation } = require('../middleware/error_handling');
+const { DatabaseErr, Validation } = require('../middleware/error-handler');
 const {
   addComment,
   allComments,
@@ -22,20 +22,15 @@ const { addArticleComment } = require('../services/article_comment');
 async function postComment(req, res) {
   const article = await singleArticle(req.body.articleId);
   if (!article) throw new Validation('Invalid article id.');
-  if (req.user.id !== article.dataValues.userId) {
+  if (req.user.id !== article.userId) {
     throw new Validation('You do not have an access.');
   }
 
   req.body.userId = req.user.id;
 
   const comment = await addComment(req.body);
-  if (!comment) throw new DatabaseErr('Invalid inserting comment.');
 
-  const joinTable = addArticleComment(
-    article.dataValues.id,
-    comment.dataValues.id
-  );
-  if (!joinTable) throw new DatabaseErr('Error in ArticleComment join table.');
+  addArticleComment(article.id, comment.id);
 
   res.status(200).json(response(200, comment, 'Comment created.'));
 }
@@ -50,9 +45,7 @@ async function postComment(req, res) {
  */
 async function getComments(req, res) {
   const data = await allComments();
-  if (!data) {
-    throw new DatabaseErr('Invalid get comments in database.');
-  }
+
   res.status(200).json(response(200, data, 'Success!'));
 }
 
@@ -69,13 +62,9 @@ async function putComment(req, res) {
     throw new Validation("You don't have an access.");
   }
   req.body.userId = req.user.id;
-  const comment = await updateComment(req.body);
-  if (!comment) throw new Validation('Invalid comment id or body data.');
+  await updateComment(req.body);
 
   const updatedData = await singleComment(req.body.id);
-  if (!updatedData) {
-    throw new DatabaseErr('Invalid get single comment data.');
-  }
 
   res.json(response(200, updatedData, 'Comment updated.'));
 }
@@ -95,7 +84,7 @@ async function deleteComment(req, res) {
   if (!preComment) {
     throw new Validation('Invalid id.');
   }
-  if (preComment.dataValues.userId !== req.user.id) {
+  if (preComment.userId !== req.user.id) {
     throw new Validation('You do not have an access.');
   }
   const comment = removeComment(id);
@@ -105,8 +94,8 @@ async function deleteComment(req, res) {
 }
 
 module.exports = {
+  putComment,
   postComment,
   getComments,
-  putComment,
   deleteComment,
 };

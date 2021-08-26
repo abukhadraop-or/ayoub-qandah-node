@@ -1,4 +1,5 @@
 const { Tag, User, Article, Comment } = require('../models');
+const { getArray } = require('../utils/get-array');
 
 /**
  * To insert new article.
@@ -7,9 +8,9 @@ const { Tag, User, Article, Comment } = require('../models');
  *
  * @return {Promise<object>} Article data.
  */
-const addArticle = (values) => {
-  const createArticle = Article.create(values);
-  return createArticle;
+const addArticle = async (values) => {
+  const createArticle = await Article.create(values);
+  return createArticle.dataValues;
 };
 
 /**
@@ -17,12 +18,13 @@ const addArticle = (values) => {
  *
  * @return {Promise<object>} Article data.
  */
-const allArticles = () => {
-  const allPosts = Article.findAndCountAll({
+const allArticles = async () => {
+  const allPosts = await Article.findAndCountAll({
     include: [
       { model: User, as: 'user', attributes: ['username'] },
       {
         model: Comment,
+        attributes: ['id', 'body', 'createdAt'],
         include: [
           {
             model: User,
@@ -31,10 +33,14 @@ const allArticles = () => {
           },
         ],
       },
+      {
+        model: Tag,
+        attributes: ['name'],
+      },
     ],
   });
 
-  return allPosts;
+  return getArray(allPosts.rows);
 };
 
 /**
@@ -44,8 +50,8 @@ const allArticles = () => {
  *
  * @return {Promise<object>} Article data.
  */
-const singleArticle = (id) => {
-  const article = Article.findOne({
+const singleArticle = async (id) => {
+  const article = await Article.findOne({
     where: { id },
     include: [
       { model: User, as: 'user', attributes: ['username'] },
@@ -56,7 +62,7 @@ const singleArticle = (id) => {
       },
     ],
   });
-  return article;
+  return article.dataValues;
 };
 
 /**

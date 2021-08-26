@@ -5,19 +5,36 @@ module.exports = (sequelize, DataTypes) => {
     static associate({ User, Tag, Comment }) {
       this.belongsTo(User, { foreignKey: 'userId', as: 'user' });
       this.belongsToMany(Tag, { through: 'ArticleTag' });
-      this.belongsToMany(Comment, { through: 'ArticleComment' });
+      this.belongsToMany(Comment, {
+        through: 'ArticleComment',
+        onDelete: 'cascade',
+        hooks: true,
+      });
     }
   }
   Article.init(
     {
+      id: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: DataTypes.INTEGER,
+      },
       slug: DataTypes.STRING,
       title: DataTypes.STRING,
       description: DataTypes.STRING,
       body: DataTypes.STRING,
-      tagList: DataTypes.ARRAY(DataTypes.STRING),
       favorites_count: DataTypes.INTEGER,
-      favorited: {
-        type: new DataTypes.BOOLEAN(DataTypes.BOOLEAN),
+      favorited: DataTypes.BOOLEAN,
+      userId: DataTypes.INTEGER,
+
+      createdAt: {
+        allowNull: false,
+        type: DataTypes.DATE,
+      },
+      updatedAt: {
+        allowNull: false,
+        type: DataTypes.DATE,
       },
     },
     {

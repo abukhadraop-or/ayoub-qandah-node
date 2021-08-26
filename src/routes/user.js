@@ -6,7 +6,7 @@ const {
   putUser,
   getUserArticles,
 } = require('../controller/user');
-const { userValidation } = require('../middleware/user_validator');
+const { userValidation } = require('../middleware/user-validator');
 
 /**
  * User routes.

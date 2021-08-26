@@ -1,17 +1,16 @@
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-  class Comment extends Model {
-    static associate({ User, Article }) {
-      this.belongsTo(User, { foreignKey: 'userId', as: 'user' });
-      this.belongsToMany(Article, {
-        through: 'ArticleComment',
+  class ArticleComment extends Model {
+    static associate({ Article }) {
+      this.belongsTo(Article, {
         onDelete: 'cascade',
         hooks: true,
       });
     }
   }
-  Comment.init(
+
+  ArticleComment.init(
     {
       id: {
         allowNull: false,
@@ -19,8 +18,8 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         type: DataTypes.INTEGER,
       },
-      body: DataTypes.STRING,
-      userId: DataTypes.INTEGER,
+      ArticleId: DataTypes.INTEGER,
+      CommentId: DataTypes.INTEGER,
       createdAt: {
         allowNull: false,
         type: DataTypes.DATE,
@@ -30,10 +29,11 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.DATE,
       },
     },
+
     {
       sequelize,
-      modelName: 'Comment',
+      modelName: 'ArticleComment',
     }
   );
-  return Comment;
+  return ArticleComment;
 };

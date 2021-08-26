@@ -1,5 +1,5 @@
 const { validationResult } = require('express-validator');
-const { Validation, DatabaseErr } = require('../middleware/error_handling');
+const { Validation } = require('../middleware/error-handler');
 const {
   addArticle,
   allArticles,
@@ -9,7 +9,7 @@ const {
 } = require('../services/article');
 const { removeArticleComment } = require('../services/article_comment');
 const { articleTag, removeArticleTag } = require('../services/article_tag');
-const { allTags, createTags } = require('../services/tag');
+const { createTags, includesTag } = require('../services/tag');
 const response = require('../utils/response');
 
 /**
@@ -28,37 +28,31 @@ async function postArticle(req, res) {
   if (err.length) {
     throw new Validation(`${err[0].msg}`);
   }
-  req.body.userId = req.user.id;
-  const article = await addArticle(req.body);
-  if (!article) {
-    throw new DatabaseErr('Error in inserting article.');
-  }
-  const tags = await allTags();
-  if (!tags) {
-    throw new DatabaseErr('Error in get tags.');
-  }
-  let tagsArr;
+  const { tagList, ...articleBody } = req.body;
+  articleBody.userId = req.user.id;
+
+  const dbArticle = await addArticle(articleBody);
+  const dbTags = await includesTag(tagList);
+
+  const ArticleId = dbArticle.id;
   const filterTags = [];
   const articleTagsId = [];
-  const inputTags = article.dataValues.tagList;
-
-  if (tags.length) {
-    tagsArr = tags.map((e) => e.dataValues.tags);
-  } else {
-    tagsArr = [];
-  }
 
   /**
    * Filtering exist tags and new tags.
    */
-  for (let x = 0; x < inputTags.length; x += 1) {
-    if (!tagsArr.includes(inputTags[x])) {
-      filterTags.push({ tags: inputTags[x] });
+  for (let x = 0; x < tagList.length; x += 1) {
+    if (dbTags.length >= x && dbTags.length) {
+      if (!tagList.includes(dbTags[x].name)) {
+        filterTags.push({ name: tagList[x] });
+      } else {
+        articleTagsId.push({
+          TagId: dbTags[x].id,
+          ArticleId,
+        });
+      }
     } else {
-      articleTagsId.push({
-        TagId: tags[tagsArr.indexOf(inputTags[x])].dataValues.id,
-        ArticleId: article.dataValues.id,
-      });
+      filterTags.push({ name: tagList[x] });
     }
   }
 
@@ -67,23 +61,17 @@ async function postArticle(req, res) {
    */
   if (filterTags.length) {
     const addTags = await createTags(filterTags);
-    if (!addTags) {
-      throw new DatabaseErr('Error in inserting new tags.');
-    }
     for (let x = 0; x < addTags.length; x += 1) {
       articleTagsId.push({
-        TagId: tags[x].dataValues.id,
-        ArticleId: article.dataValues.id,
+        TagId: addTags[x].id,
+        ArticleId: dbArticle.id,
       });
     }
   }
 
-  const joinTable = await articleTag(articleTagsId);
-  if (!joinTable) {
-    throw new DatabaseErr('Error in inserting data in articleTag join table.');
-  }
+  articleTag(articleTagsId);
 
-  res.status(200).json(response(200, article, 'Article created.'));
+  res.status(200).json(response(200, dbArticle, 'Article created.'));
 }
 
 /**
@@ -96,9 +84,7 @@ async function postArticle(req, res) {
  */
 async function getArticles(req, res) {
   const data = await allArticles();
-  if (!data) {
-    throw new DatabaseErr('Error in get articles.');
-  }
+
   res.status(200).json(response(200, data, 'success!'));
 }
 
@@ -113,9 +99,7 @@ async function getArticles(req, res) {
 async function getSingleArticle(req, res) {
   const { id } = req.params;
   const data = await singleArticle(id);
-  if (!data) {
-    throw new Validation('Invalid article id.');
-  }
+
   res.status(200).json(response(200, data, 'success!'));
 }
 
@@ -131,17 +115,11 @@ async function getSingleArticle(req, res) {
  */
 async function putArticle(req, res) {
   let article = singleArticle(req.body.id);
-  if (!article) {
-    throw new Validation('Invalid article id.');
-  }
-  if (article.userId !== req.user.id) {
-    throw new Validation('You do not have an access to update this article.');
-  }
+
   req.body.userId = req.user.id;
-  const data = await updateArticle(req.body);
-  if (!data) {
-    throw new DatabaseErr('Error in update article.');
-  }
+
+  await updateArticle(req.body);
+
   article = singleArticle(req.body.id);
 
   res.status(200).json(response(200, article, 'Article updated.'));
@@ -157,12 +135,10 @@ async function putArticle(req, res) {
  *
  * @return {object} Success message.
  */
-function deleteArticle(req, res) {
+async function deleteArticle(req, res) {
   const { articleId } = req.params;
-  const article = singleArticle(articleId);
-  if (!article) {
-    throw new Validation('Invalid article id.');
-  }
+  const article = await singleArticle(articleId);
+
   if (req.user.id !== article.userId) {
     throw new Validation('You do not have an access to update this article.');
   }
@@ -175,9 +151,9 @@ function deleteArticle(req, res) {
 }
 
 module.exports = {
+  putArticle,
   postArticle,
   getArticles,
-  getSingleArticle,
-  putArticle,
   deleteArticle,
+  getSingleArticle,
 };

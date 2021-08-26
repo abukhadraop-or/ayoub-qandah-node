@@ -1,5 +1,5 @@
 const response = require('../utils/response');
-const { DatabaseErr } = require('../middleware/error_handling');
+const { DatabaseErr } = require('../middleware/error-handler');
 const { allTags, tagsWithArticles } = require('../services/tag');
 
 /**
@@ -12,9 +12,6 @@ const { allTags, tagsWithArticles } = require('../services/tag');
  */
 async function getTags(req, res) {
   const data = await allTags();
-  if (!data) {
-    throw new DatabaseErr('Error in getting tags from database.');
-  }
 
   res.status(200).json(response(200, data, 'Success!'));
 }
@@ -30,11 +27,6 @@ async function getTags(req, res) {
  */
 async function getTagsWithArticles(req, res) {
   const tags = await tagsWithArticles();
-  if (!tags) {
-    throw new DatabaseErr(
-      'Error in getting tags with accusation from database.'
-    );
-  }
 
   const sortingTags = tags.sort(
     (a, b) => b.Articles.length - a.Articles.length

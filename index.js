@@ -1,7 +1,7 @@
-require("dotenv").config();
-const { sequelize } = require("./src/models");
-const { start } = require("./src/server");
+require('dotenv').config();
+const { sequelize } = require('./src/models');
 
+const { start } = require('./src/server');
 /**
  * Function to test if the connection to the Database  is OK.
  */

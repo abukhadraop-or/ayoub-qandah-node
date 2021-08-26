@@ -36,4 +36,5 @@ module.exports = {
       console.log('Missing port.');
     }
   },
+  app,
 };

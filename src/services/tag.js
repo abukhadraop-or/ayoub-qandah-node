@@ -1,13 +1,25 @@
 const { User, Article, Comment, Tag } = require('../models');
+const { getArray } = require('../utils/get-array');
 
 /**
  * Get all tags name.
  *
  * @returns {Promise<Array>} Tags data.
  */
-const allTags = () => {
-  const tags = Tag.findAll();
-  return tags;
+const allTags = async () => {
+  const tags = await Tag.findAll();
+
+  return getArray(tags);
+};
+
+/**
+ * Get all tags name.
+ *
+ * @returns {Promise<Array>} Tags data.
+ */
+const includesTag = async (names) => {
+  const tags = await Tag.findAll({ where: { name: names } });
+  return getArray(tags);
 };
 
 /**
@@ -31,7 +43,7 @@ const tagsWithArticles = () => {
     ],
   });
 
-  return tags;
+  return getArray(tags);
 };
 
 /**
@@ -41,8 +53,8 @@ const tagsWithArticles = () => {
  *
  * @return {Promise<object>} Tags data.
  */
-const createTags = async (tags) => {
-  const data = await Tag.bulkCreate(tags);
-  return data;
+const createTags = async (name) => {
+  const data = await Tag.bulkCreate(name);
+  return getArray(data);
 };
-module.exports = { allTags, createTags, tagsWithArticles };
+module.exports = { allTags, createTags, tagsWithArticles, includesTag };

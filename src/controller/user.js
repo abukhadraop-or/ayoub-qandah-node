@@ -2,7 +2,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator');
 const response = require('../utils/response');
-const { Validation, DatabaseErr } = require('../middleware/error_handling');
+const { Validation } = require('../middleware/error-handler');
 const {
   getUser,
   createUser,
@@ -28,9 +28,6 @@ async function signup(req, res) {
   req.body.password = hashPassword;
 
   const user = await createUser(req.body);
-  if (!user) {
-    throw new DatabaseErr(`Error in inserting new user.`);
-  }
 
   const tokenObject = {
     id: user.id,
@@ -92,17 +89,11 @@ async function putUser(req, res) {
     throw new Validation(`${err[0].msg}`);
   }
 
-  const updating = updateUser(req.body, req.user.id);
-  if (!updating) {
-    throw new DatabaseErr('Error in updating user.');
-  }
+  updateUser(req.body, req.user.id);
 
-  const token = getUser(req.user.id);
-  if (!token) {
-    throw new DatabaseErr('Error in getting user.');
-  }
+  const userNewData = getUser(req.user.id);
 
-  res.json(response(200, token, 'success!'));
+  res.json(response(200, userNewData, 'success!'));
 }
 
 /**

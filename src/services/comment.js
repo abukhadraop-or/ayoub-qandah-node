@@ -1,4 +1,5 @@
 const { User, Comment } = require('../models');
+const { getArray } = require('../utils/get-array');
 
 /**
  * Inserting new comment.
@@ -9,7 +10,7 @@ const { User, Comment } = require('../models');
  */
 const addComment = async (values) => {
   const createComment = await Comment.create(values);
-  return createComment;
+  return createComment.dataValues;
 };
 
 /**
@@ -21,7 +22,7 @@ const allComments = async () => {
   const Comments = await Comment.findAll({
     include: [{ model: User, as: 'user' }],
   });
-  return Comments;
+  return getArray(Comments);
 };
 
 /**
@@ -31,9 +32,8 @@ const allComments = async () => {
  *
  * @returns {Promise<object>} Created comment data.
  */
-const updateComment = async (values) => {
-  const comment = await Comment.update(values, { where: { id: values.id } });
-  return comment;
+const updateComment = (values) => {
+  Comment.update(values, { where: { id: values.id } });
 };
 
 /**
@@ -45,7 +45,7 @@ const updateComment = async (values) => {
  */
 const singleComment = async (id) => {
   const comment = await Comment.findOne({ where: { id } });
-  return comment;
+  return comment.dataValues;
 };
 
 /**
@@ -56,8 +56,7 @@ const singleComment = async (id) => {
  * @returns {Promise<Array>} Empty array.
  */
 const removeComment = async (id) => {
-  const comment = await Comment.destroy({ where: { id } });
-  return comment;
+  await Comment.destroy({ where: { id } });
 };
 
 module.exports = {

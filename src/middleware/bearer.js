@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const { getUser } = require('../services/user');
-const { Validation } = require('./error_handling');
+const { Validation } = require('./error-handler');
 /**
  * Login by token.
  * Check if the token valid.
@@ -17,7 +17,6 @@ module.exports = async (req, res, next) => {
   }
   const token = req.headers.authorization.split(' ').pop();
   const parsedToken = jwt.verify(token, process.env.SECRET);
-
   const userData = await getUser(parsedToken.email);
   if (userData) {
     req.user = userData;

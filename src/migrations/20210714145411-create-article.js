@@ -19,9 +19,6 @@ module.exports = {
       body: {
         type: Sequelize.STRING,
       },
-      tagList: {
-        type: Sequelize.ARRAY(Sequelize.STRING),
-      },
       favorited: {
         type: Sequelize.BOOLEAN,
       },
