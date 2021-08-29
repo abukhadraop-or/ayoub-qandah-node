@@ -48,7 +48,7 @@ const allArticles = async () => {
  *
  * @param {object} values Title, description, body & tagList.
  *
- * @return {Promise<object>} Article data.
+ * @return {Promise<Object>} Article data.
  */
 const singleArticle = async (id) => {
   const article = await Article.findOne({
@@ -68,12 +68,12 @@ const singleArticle = async (id) => {
 /**
  * To update specific article.
  *
- * @param {object} values Id, title, description, body & tagList.
+ * @param {} values Id, title, description, body & tagList.
+ *
+ * @return {Promise<[number, Object[]]>}
  */
-const updateArticle = (values) => {
-  Article.update(values, { where: { id: values.id } });
-};
-
+const updateArticle = (id, values) =>
+  Article.update(values, { where: { id }, returning: true });
 /**
  * To remove specific article.
  *

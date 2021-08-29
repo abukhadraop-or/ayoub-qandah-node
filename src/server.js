@@ -17,7 +17,7 @@ app.use(require('express').json());
  */
 app.use('/api', tagRoute);
 app.use('/api', userRoute);
-app.use('/api', articleRoute);
+app.use('/api/articles', articleRoute);
 app.use('/api', commentRoute);
 
 /**

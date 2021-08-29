@@ -8,7 +8,7 @@ const {
   singleComment,
 } = require('../services/comment');
 const { singleArticle } = require('../services/article');
-const { addArticleComment } = require('../services/article_comment');
+const { addArticleComment } = require('../services/article-comment');
 /**
  * Create comment to article.
  * Make association between comment & article.

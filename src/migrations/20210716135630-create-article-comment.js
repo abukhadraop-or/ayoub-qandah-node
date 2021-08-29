@@ -6,11 +6,24 @@ module.exports = {
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
+        onDelete: 'set null',
       },
+
       ArticleId: {
         type: Sequelize.INTEGER,
+        references: {
+          model: 'Articles',
+          key: 'id',
+        },
+        onDelete: 'CASCADE',
       },
       CommentId: {
+        // references: { model: 'Comments', key: 'id', onDelete: 'cascade' },
+        references: {
+          model: 'Comments',
+          key: 'id',
+        },
+        onDelete: 'CASCADE',
         type: Sequelize.INTEGER,
       },
       createdAt: {
@@ -24,6 +37,10 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
+    // await queryInterface.removeConstraint(
+    //   'ArticleComments',
+    //   'ArticleComments_pkey'
+    // );
     await queryInterface.dropTable('ArticleComments');
   },
 };

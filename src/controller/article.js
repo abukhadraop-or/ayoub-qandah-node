@@ -1,5 +1,5 @@
 const { validationResult } = require('express-validator');
-const { Validation } = require('../middleware/error-handler');
+const { Validation, NotFound } = require('../middleware/error-handler');
 const {
   addArticle,
   allArticles,
@@ -7,8 +7,8 @@ const {
   removeArticle,
   updateArticle,
 } = require('../services/article');
-const { removeArticleComment } = require('../services/article_comment');
-const { articleTag, removeArticleTag } = require('../services/article_tag');
+// const { removeArticleComment } = require('../services/article-comment');
+const { articleTag } = require('../services/article-tag'); //removeArticleTag
 const { createTags, includesTag } = require('../services/tag');
 const response = require('../utils/response');
 
@@ -28,48 +28,31 @@ async function postArticle(req, res) {
   if (err.length) {
     throw new Validation(`${err[0].msg}`);
   }
+
   const { tagList, ...articleBody } = req.body;
   articleBody.userId = req.user.id;
 
   const dbArticle = await addArticle(articleBody);
   const dbTags = await includesTag(tagList);
 
-  const ArticleId = dbArticle.id;
-  const filterTags = [];
-  const articleTagsId = [];
+  const newTags = [];
+  const exisitingTags = [];
+  tagList.forEach((tag) => {
+    const dbTag = dbTags.find((t) => t.name === tag);
+    (dbTag ? exisitingTags : newTags).push(dbTag || { name: tag });
+  });
 
-  /**
-   * Filtering exist tags and new tags.
-   */
-  for (let x = 0; x < tagList.length; x += 1) {
-    if (dbTags.length >= x && dbTags.length) {
-      if (!tagList.includes(dbTags[x].name)) {
-        filterTags.push({ name: tagList[x] });
-      } else {
-        articleTagsId.push({
-          TagId: dbTags[x].id,
-          ArticleId,
-        });
-      }
-    } else {
-      filterTags.push({ name: tagList[x] });
-    }
+  let addTags = [];
+  if (newTags.length) {
+    addTags = await createTags(newTags);
   }
 
-  /**
-   * Adding new tags if not exist.
-   */
-  if (filterTags.length) {
-    const addTags = await createTags(filterTags);
-    for (let x = 0; x < addTags.length; x += 1) {
-      articleTagsId.push({
-        TagId: addTags[x].id,
-        ArticleId: dbArticle.id,
-      });
-    }
-  }
-
-  articleTag(articleTagsId);
+  await articleTag(
+    [...exisitingTags, ...addTags].map((t) => ({
+      TagId: t.id,
+      ArticleId: dbArticle.id,
+    }))
+  );
 
   res.status(200).json(response(200, dbArticle, 'Article created.'));
 }
@@ -85,7 +68,7 @@ async function postArticle(req, res) {
 async function getArticles(req, res) {
   const data = await allArticles();
 
-  res.status(200).json(response(200, data, 'success!'));
+  res.json(response(data));
 }
 
 /**
@@ -100,7 +83,11 @@ async function getSingleArticle(req, res) {
   const { id } = req.params;
   const data = await singleArticle(id);
 
-  res.status(200).json(response(200, data, 'success!'));
+  if (!data) {
+    throw new NotFound('');
+  }
+
+  res.json(response(data));
 }
 
 /**
@@ -114,15 +101,21 @@ async function getSingleArticle(req, res) {
  * @return {object} Article information after updating.
  */
 async function putArticle(req, res) {
-  let article = singleArticle(req.body.id);
+  const { id } = req.params;
 
-  req.body.userId = req.user.id;
+  const article = singleArticle(id);
 
-  await updateArticle(req.body);
+  if (!article) {
+    throw new NotFound('');
+  }
 
-  article = singleArticle(req.body.id);
+  if (article.userId !== req.user.id) {
+    throw new NotFound('');
+  }
 
-  res.status(200).json(response(200, article, 'Article updated.'));
+  const [ro, data] = await updateArticle(id, req.body);
+
+  res.json(response(data));
 }
 
 /**
@@ -144,8 +137,8 @@ async function deleteArticle(req, res) {
   }
 
   removeArticle(articleId);
-  removeArticleTag(articleId);
-  removeArticleComment(articleId);
+  // removeArticleTag(articleId);
+  // removeArticleComment(articleId);
 
   res.status(200).json(response(200, null, 'Article Deleted!'));
 }

@@ -11,10 +11,11 @@ const authMiddleware = require('../middleware/bearer');
 /**
  * Article routes.
  */
-router.get('/articles', getArticles);
-router.get('/article/:id', getSingleArticle);
-router.post('/article', authMiddleware, postArticle);
-router.patch('/article', authMiddleware, putArticle);
-router.delete('/article/:articleId', authMiddleware, deleteArticle);
+router.get('/', getArticles);
+router.post('/', authMiddleware, postArticle);
+
+router.get('/:id', getSingleArticle);
+router.patch('/:id', authMiddleware, putArticle);
+router.delete('/:id', authMiddleware, deleteArticle);
 
 module.exports = router;

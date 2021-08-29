@@ -4,7 +4,7 @@ module.exports = (sequelize, DataTypes) => {
   class ArticleComment extends Model {
     static associate({ Article }) {
       this.belongsTo(Article, {
-        onDelete: 'cascade',
+        onDelete: 'set null',
         hooks: true,
       });
     }
@@ -18,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         type: DataTypes.INTEGER,
       },
-      ArticleId: DataTypes.INTEGER,
+      ArticleId: { type: DataTypes.INTEGER, onDelete: 'set null' },
       CommentId: DataTypes.INTEGER,
       createdAt: {
         allowNull: false,

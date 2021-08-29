@@ -28,12 +28,12 @@ jest.mock('../../services/article', () => ({
   removeArticle: jest.fn(),
 }));
 
-jest.mock('../../services/article_comment', () => ({
-  removeArticleComment: jest.fn().mockReturnValue({ user: 'Ayoub' }),
-  addArticleComment: jest.fn(),
-}));
+// jest.mock('../../services/article-comment', () => ({
+//   removeArticleComment: jest.fn().mockReturnValue({ user: 'Ayoub' }),
+//   addArticleComment: jest.fn(),
+// }));
 
-jest.mock('../../services/article_tag', () => ({
+jest.mock('../../services/article-tag', () => ({
   articleTag: jest.fn().mockReturnValue({ user: 'Ayoub' }),
   removeArticleTag: jest.fn(),
 }));

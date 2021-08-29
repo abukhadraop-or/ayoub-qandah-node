@@ -10,7 +10,7 @@ const { NotFound, InternalError } = require('../middleware/error-handler');
  *
  * @return {{msg, code, data}|*}
  */
-module.exports = (code, data, msg) => {
+module.exports = (data, code = 200, msg = 'Ok') => {
   if (code === 404) return new NotFound();
   if (code === 500) return new InternalError();
 
