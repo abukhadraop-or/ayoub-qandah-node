@@ -1,11 +1,7 @@
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-  class ArticleTag extends Model {
-    static associate({ Article }) {
-      // this.hasMany(Article, { onDelete: 'cascade' });
-    }
-  }
+  class ArticleTag extends Model {}
   ArticleTag.init(
     {
       id: {

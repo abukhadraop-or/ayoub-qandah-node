@@ -5,7 +5,8 @@ const { getTags, getTagsWithArticles } = require('../controller/tag');
 /**
  * Tag routes.
  */
-router.get('/tags', getTags);
-router.get('/tags/articles', getTagsWithArticles);
+router.get('/', getTags);
+
+router.get('/articles', getTagsWithArticles);
 
 module.exports = router;

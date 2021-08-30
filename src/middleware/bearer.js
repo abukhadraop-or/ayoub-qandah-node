@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const { getUser } = require('../services/user');
-const { Validation } = require('./error-handler');
+const { NotFound, Authentication } = require('./error-handler');
 /**
  * Login by token.
  * Check if the token valid.
@@ -13,8 +13,9 @@ const { Validation } = require('./error-handler');
  */
 module.exports = async (req, res, next) => {
   if (!req.headers.authorization) {
-    throw new Validation('There is no token.');
+    throw new NotFound('There is no token.');
   }
+  
   const token = req.headers.authorization.split(' ').pop();
   const parsedToken = jwt.verify(token, process.env.SECRET);
   const userData = await getUser(parsedToken.email);
@@ -22,6 +23,6 @@ module.exports = async (req, res, next) => {
     req.user = userData;
     next();
   } else {
-    throw new Validation('Invalid token.');
+    throw new Authentication('Invalid token.');
   }
 };

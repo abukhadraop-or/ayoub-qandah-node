@@ -1,8 +1,7 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { validationResult } = require('express-validator');
 const response = require('../utils/response');
-const { Validation } = require('../middleware/error-handler');
+const { Authentication } = require('../middleware/error-handler');
 const {
   getUser,
   createUser,
@@ -13,17 +12,12 @@ const {
 /**
  * Create new account.
  *
- * @param {express.Request}  req User information from a client.
+ * @param {express.Request}  req Username, Email & password.
  * @param {express.Response} res
  *
- * @return {object} User information's with token.
+ * @return {Object} Username, Email & Token.
  */
 async function signup(req, res) {
-  const err = validationResult(req).errors;
-  if (err.length) {
-    throw new Validation(`${err[0].msg}`);
-  }
-
   const hashPassword = await bcrypt.hash(req.body.password, 10);
   req.body.password = hashPassword;
 
@@ -35,9 +29,9 @@ async function signup(req, res) {
     email: user.email,
   };
   const JWT = jwt.sign(tokenObject, process.env.SECRET);
-  user.dataValues.token = JWT;
+  user.token = JWT;
 
-  res.status(200).json(response(200, user, 'Success!'));
+  res.json(response(user));
 }
 
 /**
@@ -46,18 +40,13 @@ async function signup(req, res) {
  * @param {express.Request}  req Email & Password.
  * @param {express.Response} res
  *
- * @return {object} User information's with token.
+ * @return {Object} User information's with token.
  */
 async function login(req, res) {
-  const err = validationResult(req).errors;
-  if (err.length) {
-    throw new Validation(`${err[0].msg}`);
-  }
-
   const { email, password } = req.body;
 
   const userData = await getUser(email);
-  if (!userData) throw new Validation('Invalid Email.');
+  if (!userData) throw new Authentication('Invalid Email.');
 
   const valid = await bcrypt.compare(password, userData.password);
   if (valid) {
@@ -69,9 +58,9 @@ async function login(req, res) {
     const JWT = jwt.sign(tokenObject, process.env.SECRET);
     userData.dataValues.token = JWT;
 
-    res.status(200).json(response(200, userData, 'success!'));
+    res.json(response(userData));
   } else {
-    throw new Validation('Invalid Password.');
+    throw new Authentication('Invalid Password.');
   }
 }
 
@@ -81,19 +70,11 @@ async function login(req, res) {
  * @param {express.Request}  req Id, username, bio, email & password.
  * @param {express.Response} res
  *
- * @return {object} New user data.
+ * @return {Object} New user data.
  */
 async function putUser(req, res) {
-  const err = validationResult(req).errors;
-  if (err.length) {
-    throw new Validation(`${err[0].msg}`);
-  }
-
-  updateUser(req.body, req.user.id);
-
-  const userNewData = getUser(req.user.id);
-
-  res.json(response(200, userNewData, 'success!'));
+  const [row, data] = await updateUser(req.body, req.user.id);
+  res.json(response([row, ...data]));
 }
 
 /**
@@ -102,15 +83,12 @@ async function putUser(req, res) {
  * @param {express.Request} req Token.
  * @param {express.Request} res
  *
- * @return {object} Articles data.
+ * @return {Object} Articles data.
  */
 async function getUserArticles(req, res) {
   const data = await userArticles(req.user.id);
-  if (!data) {
-    throw Validation('Invalid user id.');
-  }
 
-  res.json(response(200, data));
+  res.json(response(data));
 }
 
 module.exports = { signup, login, putUser, getUserArticles };

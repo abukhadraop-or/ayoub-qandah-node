@@ -4,9 +4,9 @@ const { getArray } = require('../utils/get-array');
 /**
  * Inserting new comment.
  *
- * @param {object} values Body, articleId & userId.
+ * @param {Object} values Body, articleId & userId.
  *
- * @returns {Promise<object>} Created comment data.
+ * @returns {Promise<Object>} Created comment data.
  */
 const addComment = async (values) => {
   const createComment = await Comment.create(values);
@@ -28,12 +28,14 @@ const allComments = async () => {
 /**
  * Updating  comment.
  *
- * @param {object} values Body, articleId & userId.
+ * @param {number} values id.
+ * @param {Object} values Body, articleId & userId.
  *
- * @returns {Promise<object>} Created comment data.
+ * @returns {Promise<[number, Object[]]>} Created comment data.
  */
-const updateComment = (values) => {
-  Comment.update(values, { where: { id: values.id } });
+const updateComment = async (id, values) => {
+  const data = await Comment.update(values, { where: { id }, returning: true });
+  return data.dataValues;
 };
 
 /**
@@ -41,7 +43,7 @@ const updateComment = (values) => {
  *
  * @param {number} id Comment id.
  *
- * @returns {Promise<object>} comment data.
+ * @returns {Promise<Object>} comment data.
  */
 const singleComment = async (id) => {
   const comment = await Comment.findOne({ where: { id } });
@@ -52,8 +54,6 @@ const singleComment = async (id) => {
  * Deleting  comment.
  *
  * @param {number} id Comment id.
- *
- * @returns {Promise<Array>} Empty array.
  */
 const removeComment = async (id) => {
   await Comment.destroy({ where: { id } });

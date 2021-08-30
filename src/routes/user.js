@@ -11,9 +11,10 @@ const { userValidation } = require('../middleware/user-validator');
 /**
  * User routes.
  */
-router.post('/login', userValidation, login);
+router.post('/login', login);
 router.post('/signup', userValidation, signup);
-router.get('/user/articles', bearer, getUserArticles);
 router.put('/update', userValidation, bearer, putUser);
+
+router.get('/articles', bearer, getUserArticles);
 
 module.exports = router;

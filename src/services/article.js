@@ -4,9 +4,9 @@ const { getArray } = require('../utils/get-array');
 /**
  * To insert new article.
  *
- * @param {object} values Title, description, body & tagList.
+ * @param {Object} values Title, description, body & tagList.
  *
- * @return {Promise<object>} Article data.
+ * @return {Promise<Object>} Article data(without any association).
  */
 const addArticle = async (values) => {
   const createArticle = await Article.create(values);
@@ -16,7 +16,7 @@ const addArticle = async (values) => {
 /**
  * To get all articles.
  *
- * @return {Promise<object>} Article data.
+ * @return {Promise<Array>} Articles data (User:username,Comment:[],Tag:[]).
  */
 const allArticles = async () => {
   const allPosts = await Article.findAndCountAll({
@@ -44,14 +44,14 @@ const allArticles = async () => {
 };
 
 /**
- * To insert new article.
+ * To get single article by id.
  *
- * @param {object} values Title, description, body & tagList.
+ * @param {id} values Id.
  *
- * @return {Promise<Object>} Article data.
+ * @return {Promise<Object>} Article data (User:username,Comment:[],Tag:[]).
  */
 const singleArticle = async (id) => {
-  const article = await Article.findOne({
+  const { dataValues } = await Article.findOne({
     where: { id },
     include: [
       { model: User, as: 'user', attributes: ['username'] },
@@ -62,31 +62,35 @@ const singleArticle = async (id) => {
       },
     ],
   });
-  return article.dataValues;
+  return dataValues;
 };
 
 /**
  * To update specific article.
  *
- * @param {} values Id, title, description, body & tagList.
+ * @param {number} id     Id.
+ * @param {Object} values Title, description, body & tagList.
  *
  * @return {Promise<[number, Object[]]>}
  */
-const updateArticle = (id, values) =>
-  Article.update(values, { where: { id }, returning: true });
+const updateArticle = async (id, values) => {
+  const data = await Article.update(values, { where: { id }, returning: true });
+  return data;
+};
+
 /**
  * To remove specific article.
  *
- * @param {object} articleId Article id.
+ * @param {Object} articleId Article id.
  */
 const removeArticle = async (articleId) => {
   await Article.destroy({ where: { id: articleId } });
 };
 
 module.exports = {
-  removeArticle,
-  allArticles,
   addArticle,
+  allArticles,
+  removeArticle,
   singleArticle,
   updateArticle,
 };

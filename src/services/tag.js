@@ -4,28 +4,29 @@ const { getArray } = require('../utils/get-array');
 /**
  * Get all tags name.
  *
- * @returns {Promise<Array>} Tags data.
+ * @returns {Promise<Array>} Tags data without association.
  */
 const allTags = async () => {
   const tags = await Tag.findAll();
-
   return getArray(tags);
 };
 
 /**
- * Get all tags name.
+ * Get just specific tags.
+ *
+ * @param {Array} name Tag names.
  *
  * @returns {Promise<Array>} Tags data.
  */
-const includesTag = async (names) => {
-  const tags = await Tag.findAll({ where: { name: names } });
+const includesTag = async (name) => {
+  const tags = await Tag.findAll({ where: { name } });
   return getArray(tags);
 };
 
 /**
  * Get all tags with all related articles and user.
  *
- * @returns {Promise<object>} Tags with Articles:{data,user & comments}.
+ * @returns {Promise<Array>} Tags with Articles:{data,user & comments}.
  */
 const tagsWithArticles = () => {
   const tags = Tag.findAll({
@@ -43,15 +44,15 @@ const tagsWithArticles = () => {
     ],
   });
 
-  return getArray(tags);
+  return tags;
 };
 
 /**
  * Inserting multi or single  tag.
  *
- * @param {object} tags Tags.
+ * @param {Object} tags Tag name.
  *
- * @return {Promise<object>} Tags data.
+ * @return {Promise<Array>} Tags data.
  */
 const createTags = async (name) => {
   const data = await Tag.bulkCreate(name);

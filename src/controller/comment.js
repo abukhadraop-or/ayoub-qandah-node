@@ -1,5 +1,10 @@
 const response = require('../utils/response');
-const { DatabaseErr, Validation } = require('../middleware/error-handler');
+const {
+  DatabaseErr,
+  Validation,
+  NotFound,
+  Authentication,
+} = require('../middleware/error-handler');
 const {
   addComment,
   allComments,
@@ -17,13 +22,13 @@ const { addArticleComment } = require('../services/article-comment');
  * @param {express.Request}  req Body & userId.
  * @param {express.Response} res
  *
- * @return {object} Comment data.
+ * @return {Object} Comment data.
  */
 async function postComment(req, res) {
   const article = await singleArticle(req.body.articleId);
-  if (!article) throw new Validation('Invalid article id.');
+  if (!article) throw new NotFound('Invalid article id.');
   if (req.user.id !== article.userId) {
-    throw new Validation('You do not have an access.');
+    throw new Authentication('You do not have an access.');
   }
 
   req.body.userId = req.user.id;
@@ -32,7 +37,7 @@ async function postComment(req, res) {
 
   addArticleComment(article.id, comment.id);
 
-  res.status(200).json(response(200, comment, 'Comment created.'));
+  res.json(response(comment));
 }
 
 /**
@@ -41,12 +46,12 @@ async function postComment(req, res) {
  * @param {express.Request}  req
  * @param {express.Response} res
  *
- * @return {object} Comments.
+ * @return {Array} Comments data (user:username).
  */
 async function getComments(req, res) {
   const data = await allComments();
 
-  res.status(200).json(response(200, data, 'Success!'));
+  res.json(response(data));
 }
 
 /**
@@ -55,40 +60,42 @@ async function getComments(req, res) {
  * @param {express.Request}  req Comment id.
  * @param {express.Response} res
  *
- * @return {object} Comment updated.
+ * @return {Object} Comment updated values.
  */
 async function putComment(req, res) {
-  if (req.user.id !== req.body.id) {
-    throw new Validation("You don't have an access.");
+  const { id } = req.params;
+  const getComment = await singleComment(id);
+
+  if (req.user.id !== getComment.userId) {
+    throw new Authentication("You don't have an access.");
   }
-  req.body.userId = req.user.id;
-  await updateComment(req.body);
 
-  const updatedData = await singleComment(req.body.id);
+  const updatedData = await updateComment(id, req.body);
 
-  res.json(response(200, updatedData, 'Comment updated.'));
+  res.json(response(updatedData));
 }
 
 /**
  * Delete specific comment by id.
+ * Check if the user has permission.
  *
  * @param {express.Request}  req Comment id.
  * @param {express.Response} res
  *
- * @return {object} Comment deleted.
+ * @return {Object} Comment deleted message.
  */
 async function deleteComment(req, res) {
   const { id } = req.params;
-  const preComment = await singleComment(id);
 
+  const preComment = await singleComment(id);
   if (!preComment) {
-    throw new Validation('Invalid id.');
+    throw new NotFound('Invalid id.');
   }
   if (preComment.userId !== req.user.id) {
-    throw new Validation('You do not have an access.');
+    throw new Authentication('You do not have an access.');
   }
-  const comment = removeComment(id);
-  if (!comment) throw new Validation('Invalid comment id.');
+
+  await removeComment(id);
 
   res.json(response(200, null, 'Comment Deleted.'));
 }

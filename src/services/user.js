@@ -3,21 +3,21 @@ const { User, Article, Comment } = require('../models');
 /**
  * Inserting new user.
  *
- * @param {object} values Username,Email & Password.
+ * @param {Object} values Username,email & password.
  *
- * @returns {Promise<object>} user data.
+ * @returns {Promise<Object>} Username, Email.
  */
 const createUser = async (values) => {
   const user = await User.create(values);
-  return user;
+  return user.dataValues;
 };
 
 /**
  * Get user.
  *
- * @param {number} email Email.
+ * @param {String} email Email.
  *
- * @returns {Promise<object>} User data.
+ * @returns {Promise<Object>} Email, username, id & token.
  */
 const getUser = async (email) => {
   const user = await User.findOne({ where: { email } });
@@ -25,15 +25,15 @@ const getUser = async (email) => {
 };
 
 /**
- * Update user depend on .
+ * Update user depend on request.
  *
- * @param {object} values Email, Username & Password.
+ * @param {Object} values Email, Username & Password.
  * @param {number} id     User id.
  *
- * @returns {Promise<object>} New user data.
+ * @returns {Promise<[number, Object[]]>} Updated user data.
  */
 const updateUser = async (values, id) => {
-  const user = await User.update(values, { where: { id } });
+  const user = await User.update(values, { where: { id }, returning: true });
   return user;
 };
 
