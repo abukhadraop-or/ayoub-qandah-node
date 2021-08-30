@@ -13,9 +13,9 @@ const { NotFound, Authentication } = require('./error-handler');
  */
 module.exports = async (req, res, next) => {
   if (!req.headers.authorization) {
-    throw new NotFound('There is no token.');
+    throw new Authentication('There is no token.');
   }
-  
+
   const token = req.headers.authorization.split(' ').pop();
   const parsedToken = jwt.verify(token, process.env.SECRET);
   const userData = await getUser(parsedToken.email);

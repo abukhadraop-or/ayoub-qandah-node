@@ -1,6 +1,5 @@
 const response = require('../utils/response');
 const { allTags, tagsWithArticles } = require('../services/tag');
-const { InternalError, NotFound } = require('../middleware/error-handler');
 
 /**
  * Get all tags name without any association.

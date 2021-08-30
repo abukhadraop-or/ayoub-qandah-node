@@ -7,11 +7,10 @@ module.exports = (sequelize, DataTypes) => {
       this.belongsToMany(Tag, { through: 'ArticleTag' });
       this.belongsToMany(Comment, {
         through: 'ArticleComment',
-        onDelete: 'cascade',
-        hooks: true,
       });
     }
   }
+
   Article.init(
     {
       id: {

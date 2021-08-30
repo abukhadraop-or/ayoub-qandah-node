@@ -6,8 +6,6 @@ module.exports = (sequelize, DataTypes) => {
     static associate({ Article, Comment }) {
       this.hasMany(Article, {
         foreignKey: 'userId',
-        onDelete: 'cascade',
-        hooks: true,
       });
       this.hasOne(Comment, { foreignKey: 'userId' });
     }

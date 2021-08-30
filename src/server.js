@@ -5,7 +5,7 @@ const tagRoute = require('./routes/tag');
 const userRoute = require('./routes/user');
 const articleRoute = require('./routes/article');
 const commentRoute = require('./routes/comment');
-const { InternalError, NotFound } = require('./middleware/error-handler');
+const { NotFound, errorHandler } = require('./middleware/error-handler');
 const response = require('./utils/response');
 
 app.use(cors());
@@ -24,11 +24,11 @@ app.use('/api/comments', commentRoute);
 /**
  * Not Found Error & Internal Error.
  */
-app.use('*', (req, res, next) => res.json(new NotFound()));
-
-app.use((err, req, res, next) => {
-  res.json(response(undefined, err.code || 500, 'Error occouerd'));
+app.use('*', (req, res, next) => {
+  throw new NotFound();
 });
+
+app.use(errorHandler);
 
 module.exports = {
   start: (port) => {

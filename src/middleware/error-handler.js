@@ -1,5 +1,5 @@
 /**
- * Global ErrorHandler Classes.
+ *  Error classes.
  */
 
 // eslint-disable-next-line max-classes-per-file
@@ -7,13 +7,13 @@ class BaseError extends Error {
   constructor(msg, code) {
     super(msg);
     this.code = code;
+    this.msg = msg;
   }
 }
 
 class NotFound extends BaseError {
   constructor(msg, code) {
     super((msg = 'Not Found!'), (code = 404));
-    this.hint = 'Try to sure the link and method are correct.';
   }
 }
 
@@ -31,15 +31,19 @@ class Authentication extends BaseError {
   }
 }
 
-class InternalError extends BaseError {
-  constructor(msg, code) {
-    super((msg = 'Not Found!'), (code = 500));
-  }
-}
+/**
+ * Error handler middleware.
+ */
+const response = require('../utils/response');
+
+const errorHandler = (err, req, res, next) => {
+  const errorMsg = err.code ? err.msg : 'Error occurred!';
+  res.json(response(undefined, err.code || 500, errorMsg));
+};
 
 module.exports = {
+  errorHandler,
   NotFound,
   Validation,
   Authentication,
-  InternalError,
 };

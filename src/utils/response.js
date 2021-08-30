@@ -7,8 +7,8 @@
  *
  * @return {{msg, code, data}|*}
  */
-module.exports = (data, code = 200, msg = 'Ok') => {
-  const res = { code, msg };
+module.exports = (data, code = 200, msg) => {
+  const res = { code, msg: msg || 'Ok' };
   if (data) {
     res.data = data;
   }

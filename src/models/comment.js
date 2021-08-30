@@ -6,8 +6,6 @@ module.exports = (sequelize, DataTypes) => {
       this.belongsTo(User, { foreignKey: 'userId', as: 'user' });
       this.belongsToMany(Article, {
         through: 'ArticleComment',
-        onDelete: 'set null',
-        hooks: true,
       });
     }
   }
@@ -19,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         type: DataTypes.INTEGER,
       },
-      body: { type: DataTypes.STRING, onDelete: 'cascade' },
+      body: { type: DataTypes.STRING },
       userId: DataTypes.INTEGER,
       createdAt: {
         allowNull: false,

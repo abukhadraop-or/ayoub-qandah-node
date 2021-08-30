@@ -6,7 +6,7 @@ const { ArticleComment } = require('../models');
  * @param {number} articleId Article id.
  * @param {number} articleId Comment id.
  *
- * @return {Promise<object>} ArticleId & CommentId.
+ * @return {Promise<Object>} ArticleId & CommentId.
  */
 const addArticleComment = (articleId, commentId) =>
   ArticleComment.create({

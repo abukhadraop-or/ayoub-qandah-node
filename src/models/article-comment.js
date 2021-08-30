@@ -1,14 +1,7 @@
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-  class ArticleComment extends Model {
-    static associate({ Article }) {
-      this.belongsTo(Article, {
-        onDelete: 'set null',
-        hooks: true,
-      });
-    }
-  }
+  class ArticleComment extends Model {}
 
   ArticleComment.init(
     {
@@ -18,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         type: DataTypes.INTEGER,
       },
-      ArticleId: { type: DataTypes.INTEGER, onDelete: 'set null' },
+      ArticleId: { type: DataTypes.INTEGER },
       CommentId: DataTypes.INTEGER,
       createdAt: {
         allowNull: false,
