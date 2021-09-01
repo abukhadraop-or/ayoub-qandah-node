@@ -28,10 +28,12 @@ module.exports.userValidation = [
         if (req.body.id) {
           throw new Validation('Invalid input data.');
         }
+
         next();
       } else {
         throw new Validation(`${err[0].msg}`);
       }
     }
+    next();
   },
 ];

@@ -22,7 +22,6 @@ async function signup(req, res) {
   req.body.password = hashPassword;
 
   const user = await createUser(req.body);
-
   const tokenObject = {
     id: user.id,
     username: user.username,
@@ -30,7 +29,7 @@ async function signup(req, res) {
   };
   const JWT = jwt.sign(tokenObject, process.env.SECRET);
   user.token = JWT;
-
+  console.log(user);
   res.json(response(user));
 }
 

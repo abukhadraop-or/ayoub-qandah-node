@@ -39,6 +39,10 @@ const tagsWithArticles = () => {
             model: Comment,
             include: [{ model: User, as: 'user', attributes: ['username'] }],
           },
+          {
+            model: Tag,
+            attributes: ['name'],
+          },
         ],
       },
     ],

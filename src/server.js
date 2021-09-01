@@ -9,6 +9,7 @@ const { NotFound, errorHandler } = require('./middleware/error-handler');
 const response = require('./utils/response');
 
 app.use(cors());
+
 app.use(morgan('dev'));
 app.use(require('express').json());
 

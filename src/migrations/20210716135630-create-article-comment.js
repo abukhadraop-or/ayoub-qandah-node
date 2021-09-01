@@ -18,7 +18,6 @@ module.exports = {
         onDelete: 'CASCADE',
       },
       CommentId: {
-        // references: { model: 'Comments', key: 'id', onDelete: 'cascade' },
         references: {
           model: 'Comments',
           key: 'id',
@@ -37,10 +36,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    // await queryInterface.removeConstraint(
-    //   'ArticleComments',
-    //   'ArticleComments_pkey'
-    // );
     await queryInterface.dropTable('ArticleComments');
   },
 };
