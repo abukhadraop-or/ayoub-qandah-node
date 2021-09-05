@@ -11,6 +11,7 @@ module.exports = {
       onDelete: 'cascade',
     });
   },
+
   down: async (queryInterface, Sequelize) => {
     await queryInterface.removeConstraint(
       'ArticleTags',

@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  server:
+    build: .
+    ports:
+      - '3500:3500'
+
+  db:
+    image: 'postgres'
+    ports:
+      - '4000:5432'
+    environment:
+      POSTGRES_DB: 'postgres'
+      POSTGRES_USER: 'postgres'
+      POSTGRES_PASSWORD: '123456'

@@ -5,6 +5,6 @@ const { start } = require('./src/server');
 /**
  * Function to test if the connection to the Database  is OK.
  */
-sequelize.authenticate().then(() => {
-  start(process.env.PORT);
-});
+// sequelize.authenticate().then(() => {});
+
+start(process.env.PORT);
